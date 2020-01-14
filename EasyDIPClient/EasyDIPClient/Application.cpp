@@ -34,21 +34,91 @@ Application::Application() {
 	bw = EDConvolution::CreateNegative();
 	composite = EDCompositeConv::Create();
 
+	std::unique_ptr<EDConvolution> blur{ EDConvolution::CreateCustom(
+		EDConvolution::Normalize({
+			1,2,1,
+			2,3,2,
+			1,2,1
+		}),
+		{ 0,0,0,0 }, 3, 3, 1, 1) };
+
+	std::unique_ptr<EDConvolution> blurPower{ EDConvolution::CreateCustom(
+	EDConvolution::Normalize({
+		1,2,3,2,1,
+		2,4,6,4,2,
+		3,6,8,6,3,
+		2,4,6,4,2,
+		1,2,3,2,1
+	}),
+	{ 0,0,0,0 }, 5, 5, 2, 2) };
+
+
+	std::unique_ptr<EDConvolution> sobelX{ EDConvolution::CreateCustom(
+	{
+		1, 2, 1,
+		0, 0, 0,
+		-1, -2, 1,
+	},
+	{ 0,0,0,0 }, 3, 3, 1, 1) };
+
+	std::unique_ptr<EDConvolution> sobelY{ EDConvolution::CreateCustom(
+	{
+		-1 , 0, 1,
+		-2 , 0, 2,
+		-1 , 0, 1,
+	},
+	{ 0,0,0,0 }, 3, 3, 1, 1) };
+
+	std::unique_ptr<EDConvolution> average{ EDConvolution::CreateCustom(
+	EDConvolution::Normalize({
+		1,1,1,
+		1,1,1,
+		1,1,1,
+	}),
+	{ 0,0,0,0 }, 3, 3, 1, 1) };
+
+	std::unique_ptr<EDConvolution> laplacian{ EDConvolution::CreateCustom(
+	{
+		-1,-1,-1,
+		-1,8,-1,
+		-1,-1,-1,
+	},
+	{ 0,0,0,0 }, 3, 3, 1, 1) };
+
+
 	composite->push_back(bw);
 	composite->push_back(bw);
-	
 	
 	{
-		std::unique_ptr<EDImage> bwImg{bw->ApplyConvolution(*img)};
-		Save(bwImg.get(), "bw.png");
+		//std::unique_ptr<EDImage> bwImg{bw->ApplyConvolution(*img)};
+		//Save(bwImg.get(), "bw.png");
 
-		std::unique_ptr<EDImage> srcDest{ bw->ApplyConvolution(*img, img) };
-		Save(srcDest.get(), "srcDest.png");
+		//std::unique_ptr<EDImage> srcDest{ bw->ApplyConvolution(*img, img) };
+		//Save(srcDest.get(), "srcDest.png");
 
 
-		std::unique_ptr<EDImage> compositeImg{ composite->ApplyConvolution(*img) };
-		Save(compositeImg.get(), "composite.png");
+		//std::unique_ptr<EDImage> compositeImg{ composite->ApplyConvolution(*img) };
+		//Save(compositeImg.get(), "composite.png");
 
+
+		std::unique_ptr<EDImage> blurImg{ blur->ApplyConvolution(*img) };
+		Save(blurImg.get(), "blurImg.png");
+
+		std::unique_ptr<EDImage> blurPowerImg { blurPower->ApplyConvolution(*img) };
+		Save(blurPowerImg.get(), "blurPowerImg.png");
+
+		std::unique_ptr<EDImage> sobelXImg{ sobelX->ApplyConvolution(*img) };
+		Save(sobelXImg.get(), "sobelXImg.png");
+
+
+		std::unique_ptr<EDImage> sobelYImg{ sobelY->ApplyConvolution(*img) };
+		Save(sobelYImg.get(), "sobelYImg.png");
+
+		std::unique_ptr<EDImage> averageImg{ average->ApplyConvolution(*img) };
+		Save(averageImg.get(), "averageImg.png");
+
+		std::unique_ptr<EDImage> laplacianImg{ laplacian->ApplyConvolution(*img) };
+		Save(laplacianImg.get(), "laplacianImg.png");
 		
 	/*
 
@@ -95,13 +165,11 @@ void Application::ImGui()
 {
 	ImGui::Begin("Convolution Editor");
 
-
-	
 	if (ImGui::InputInt("Convolution Height", &heightConv))
 	{
 		heightConv = clamp(7, 1, heightConv);
-
 	}
+
 	if (ImGui::InputInt("Convolution Width", &widthConv))
 	{
 		widthConv = clamp(7, 1, widthConv);
@@ -179,7 +247,6 @@ void Application::ImGui()
 	{
 		for (size_t xx = 0; xx < widthConv; xx++, nn++)
 		{
-			std::cout<<"\"" << xx << "," << yy<<"\","<<std::endl;
 			ImGui::ColorEdit4(names[nn], (float*)&color[yy][xx], ImGuiColorEditFlags_NoInputs | ImGuiColorEditFlags_NoLabel);
 			ImGui::SameLine();
 		}

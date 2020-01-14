@@ -35,6 +35,15 @@ EDImage::EDImage() {
 
 unsigned char* EDImage::Get(int x, int y) const
 {
+	if (x < 0 || x >= widthChannels)
+	{
+		return defColor;
+	}
+
+	if (y < 0 || y >= height) {
+		return defColor;
+	}
+
 	return &data[y * widthChannels + x];
 }
 
@@ -49,6 +58,7 @@ void EDImage::Set(int x, int y, unsigned char* color, int nChannels)
 }
 
 EDImage::~EDImage() {
+	delete defColor;
 	stbi_image_free(data);
 }
 
@@ -76,3 +86,5 @@ float clamp(const float u, const float d, const float v)
 {
 	return std::min(std::max(d,v), u);
 }
+
+

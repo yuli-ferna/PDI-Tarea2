@@ -97,6 +97,7 @@
     <ClInclude Include="EasyDIPClient\EDClientpch.h" />
     <ClInclude Include="EasyDIPClient\imgui_impl_glfw.h" />
     <ClInclude Include="EasyDIPClient\imgui_impl_opengl3.h" />
+    <ClInclude Include="EasyDIPClient\main.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="EasyDIPClient\Application.cpp" />

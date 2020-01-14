@@ -12,6 +12,7 @@ public:
 
 
 		bool copyAfter = &source == destiny;
+
 		if (!destiny)
 		{
 			destiny = EDImage::CreateCanvas(source);
@@ -26,7 +27,7 @@ public:
 
 		if (copyAfter)
 		{
-
+			// TODO: permitir que el usuario escriba en la misma imagen de entrada
 		}
 
 		return destiny;

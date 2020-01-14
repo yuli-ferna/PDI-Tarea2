@@ -20,8 +20,6 @@ class Application
 	EDImage *img;
 	EDCompositeConv* composite;
 	EDConvolution* bw, grey;
-	//float color[4];
-
 
 	unsigned int texOGImg = 0;
 	int widthConv = 1;
@@ -33,6 +31,12 @@ public:
 	~Application();
 	void Save(EDImage* img, const std::string& path);
 
+	void Render()
+	{
+
+
+
+	}
 	void ImGui();
 	
 	static void HelpMarker(const char* desc);

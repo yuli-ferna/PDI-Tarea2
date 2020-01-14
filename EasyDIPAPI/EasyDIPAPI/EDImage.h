@@ -25,7 +25,10 @@ public:
 	int GetHeight() const;
 	int GetNChannels() const;
 	int GetWidthChannels() const;
+
 private:
+
+	unsigned char* defColor = new unsigned char[4] { 0,0,0,0 };
 	size_t widthChannels;
 	int width, height, nChannels;
 	unsigned char* data;
