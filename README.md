@@ -15,7 +15,7 @@ Contiene todo el código relacionado a la API del proyecto y es donde haremos el
 # EasyDIPBenchmark
 Contiene todas las pruebas de la app y las mediciones del tiempo, debería exportar un archivo csv para que podamos hacer las gráficas en excel del proyecto
 
-#EasyDIPClient
+# EasyDIPClient
 Interfaz gráfica de la app que permite hacer un preview de todas las funciones de la API.
 
 Acá solo se utiliza la API de EasyDIPAPI para trabajar en la app
