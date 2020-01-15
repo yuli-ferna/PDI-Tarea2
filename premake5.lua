@@ -34,13 +34,16 @@ project "EasyDIPAPI"
 
    files { "%{prj.name}/**.h", "%{prj.name}/**.cpp"}
 
-	includedirs
-	{
-		"%{prj.name}/src",
+   links {
+      "glad",
+      "GLFW"
+   }
+	includedirs{
 		-- "%{IncludeDir.SDL}",
 		"%{IncludeDir.glad}",
-		"%{IncludeDir.glm}",
       "%{IncludeDir.stb}",
+      
+
 	}
 
    filter "configurations:Debug"
@@ -78,9 +81,13 @@ project "EasyDIPBenchmark"
    language "C++"
    cppdialect "C++17"
    includedirs{
-      "EasyDIPAPI"
+      "EasyDIPAPI",
+      "%{IncludeDir.stb}",
+      "%{IncludeDir.glad}",
+		"%{IncludeDir.GLFW}"
+      
    }
-   links{"EasyDIPAPI"}
+   links{"EasyDIPAPI", "glad", "GLFW"}
    files { "%{prj.name}/**.h", "%{prj.name}/**.cpp" }
 
    filter "configurations:Debug"

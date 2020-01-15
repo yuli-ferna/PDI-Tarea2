@@ -10,12 +10,11 @@
 #ifndef __ED_CLIENT_APPLICATION__
 #define __ED_CLIENT_APPLICATION__
 
-
-
 class Application
 {
 	//template <typename TT> using ptr = std::shared_ptr<TT>;
-	ImGui::FileBrowser fileDialog;
+	//ImGui::FileBrowser fileDialog;
+	
 
 	EDImage *img;
 	EDCompositeConv* composite;

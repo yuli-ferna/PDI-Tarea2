@@ -18,7 +18,6 @@
     <ClInclude Include="EasyDIPClient\imgui_impl_opengl3.h">
       <Filter>EasyDIPClient</Filter>
     </ClInclude>
-    <ClInclude Include="EasyDIPClient\main.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="EasyDIPClient\Application.cpp">

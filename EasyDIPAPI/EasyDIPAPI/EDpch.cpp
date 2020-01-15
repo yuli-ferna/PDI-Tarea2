@@ -6,3 +6,10 @@
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include <stb_image_write.h>
 
+
+bool EDInit()
+{
+
+	// ... <snip> ... more code
+	return true;
+}

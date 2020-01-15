@@ -35,14 +35,16 @@ public:
 		return d;
 	}
 
-
-
 	EDImage* EDConvolution::ApplyConvolution(const EDImage& source, EDImage* destiny = nullptr) {
 
 		bool isSameImg = &source == destiny;
 		if (!destiny || isSameImg)
 		{
 			destiny = EDImage::CreateCanvas(source);
+		}
+		else
+		{
+			EDImage::CreateCanvas(source, destiny);
 		}
 
 		int nChannels = source.GetNChannels();
@@ -86,10 +88,6 @@ public:
 		
 		return destiny;
 	}
-	void ForEachKernel()
-	{
-
-	}
 	static EDConvolution* CreateCustom(std::vector<float> data, std::vector<float> constant, int w, int h, int px, int py, int sx = 1, int sy = 1) {
 		EDConvolution* conv = new EDConvolution();
 
@@ -104,8 +102,6 @@ public:
 
 		return conv;
 	}
-	
-	
 	static EDConvolution* CreateNegative();
 	static EDConvolution* CreateCopyPass();
 

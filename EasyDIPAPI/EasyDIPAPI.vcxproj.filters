@@ -27,6 +27,8 @@
     <ClInclude Include="EasyDIPAPI\EDpch.h">
       <Filter>EasyDIPAPI</Filter>
     </ClInclude>
+    <ClInclude Include="EasyDIPAPI\EDImageIterator.h" />
+    <ClInclude Include="Shader.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="EasyDIPAPI\EDBaseConv.cpp">
@@ -44,5 +46,7 @@
     <ClCompile Include="EasyDIPAPI\EDpch.cpp">
       <Filter>EasyDIPAPI</Filter>
     </ClCompile>
+    <ClCompile Include="EasyDIPAPI\EDImageIterator.cpp" />
+    <ClCompile Include="Shader.cpp" />
   </ItemGroup>
 </Project>

@@ -2,7 +2,6 @@
 
 
 #include "Application.h"
-#include "main.h"
 
 std::unique_ptr<Application> app;
 
