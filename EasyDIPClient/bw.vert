@@ -8,7 +8,6 @@ out vec2 fragUv;
 
 void main()
 {
-	
 	fragPos = pos;
 	fragUv = uv;
 

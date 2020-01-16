@@ -1,4 +1,8 @@
 #include "Application.h"
+
+
+extern Shader* bwShader;
+
 Application::Application() {
 
 	// Setup window
@@ -27,7 +31,7 @@ Application::Application() {
 #endif
 
 	// Create window with graphics context
-	 window = glfwCreateWindow(1280, 720, "Dear ImGui GLFW+OpenGL3 example", NULL, NULL);
+	 window = glfwCreateWindow(800, 600, "Dear ImGui GLFW+OpenGL3 example", NULL, NULL);
 	 if (window == NULL) {
 
 		__debugbreak();
@@ -64,50 +68,27 @@ Application::Application() {
 	ImGui_ImplOpenGL3_Init(glsl_version);
 
 
-	bool show_demo_window = true;
-	bool show_another_window = false;
-	ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
-	if (EDImage::TryLoad("C:/Users/adrianjmejias/Desktop/CG3-P1/chikis.jpg", img))
+	if (EDImage::TryLoad("../chikis.jpg", img))
 	{
 		std::cout << "img loaded successfully\n";
-
-		//if (EDImage::TrySave(img, "saved.png"))
-		//{
-		//	std::cout << "success img save \n";
-		//}
-		//else 
-		//{
-		//	std::cout << "failed img save \n";
-		//}
 	}
 	else
 	{
 		std::cout << "img load fail\n";
-
+		return;
 	}
 
-
+	bwShader = new Shader("bw.vert", "bw.frag");
 
 	std::unique_ptr<RawData> negative{ EDNegativeHA(img->data, img->GetWidth(), img->GetHeight()) };
+	texId = GetTexture(negative.get(), img->GetWidth(), img->GetHeight());
 
 
 
-
-	std::string pathNegative = "negative.png";
-	EDImage::TrySave(negative.get(), pathNegative, img->GetWidth(), img->GetHeight(), img->GetNChannels());
-	
+	//std::string pathNegative = "negative.png";
+	//EDImage::TrySave(negative.get(), pathNegative, img->GetWidth(), img->GetHeight(), img->GetNChannels());
+	//
 	/*NegativeHA(img->data, imgWidth, imgHeight, nChannels, strideX, strideY, conv, convWidth, convHeight);*/
-
-
-
-
-
-
-
-
-
-
-
 
 	//{
 	//	std::unique_ptr<EDBaseConvolution> mv10{ EDConvolution::CreateCustom({ 0,0,0,0,0,0,0,0,0,1 }, 10, 1, 9, 0) };
@@ -240,9 +221,9 @@ Application::~Application() {
 	glfwDestroyWindow(window);
 	glfwTerminate();
 
-	delete img;
-	delete composite;
-	delete bw;
+	//delete img;
+	//delete composite;
+	//delete bw;
 }
 
 void Application::Save(EDImage* img, const std::string& path)
@@ -259,37 +240,30 @@ void Application::Save(EDImage* img, const std::string& path)
 
 void Application::MainLoop()
 {
-	while (!glfwWindowShouldClose(window) && false)
+	while (!glfwWindowShouldClose(window))
 	{
-		// Poll and handle events (inputs, window resize, etc.)
-		// You can read the io.WantCaptureMouse, io.WantCaptureKeyboard flags to tell if dear imgui wants to use your inputs.
-		// - When io.WantCaptureMouse is true, do not dispatch mouse input data to your main application.
-		// - When io.WantCaptureKeyboard is true, do not dispatch keyboard input data to your main application.
-		// Generally you may always pass all inputs to dear imgui, and hide them from your application based on those two flags.
-		glfwPollEvents();
-
-		// Start the Dear ImGui frame
-		ImGui_ImplOpenGL3_NewFrame();
-		ImGui_ImplGlfw_NewFrame();
-		ImGui::NewFrame();
-
-
-
-
-		// 1. Show the big demo window (Most of the sample code is in ImGui::ShowDemoWindow()! You can browse its code to learn more about Dear ImGui!).
-		if (show_demo_window)
-			ImGui::ShowDemoWindow(&show_demo_window);
-
-		ImGui();
-		Render();
-
-		// Rendering
-		ImGui::Render();
 		int display_w, display_h;
 		glfwGetFramebufferSize(window, &display_w, &display_h);
 		glViewport(0, 0, display_w, display_h);
 		glClearColor(0, 0, 0, 1);
 		glClear(GL_COLOR_BUFFER_BIT);
+		glfwPollEvents();
+
+		ImGui_ImplOpenGL3_NewFrame();
+		ImGui_ImplGlfw_NewFrame();
+		ImGui::NewFrame();
+
+
+		if (show_demo_window)
+			ImGui::ShowDemoWindow(&show_demo_window);
+
+		ImGui();
+
+		// Rendering
+		ImGui::Render();
+		Render();
+
+
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
 		glfwSwapBuffers(window);
@@ -298,8 +272,14 @@ void Application::MainLoop()
 
 void Application::Render()
 {
+	Quad *quad = Quad::Instance();
 
-
+	bwShader->use();
+	glActiveTexture(0);
+	glBindTexture(GL_TEXTURE_2D, texId);
+	bwShader->setInt("tex", 0);
+	quad->Bind();
+	quad->Draw();
 
 }
 
@@ -398,6 +378,13 @@ void Application::ImGui()
 	if (texOGImg)
 	{
 		//ImGui::Image(my_tex_id, ImVec2(my_tex_w, my_tex_h), ImVec2(0, 0), ImVec2(1, 1), ImVec4(1.0f, 1.0f, 1.0f, 1.0f), ImVec4(1.0f, 1.0f, 1.0f, 0.5f));
+	}
+
+	if (ImGui::Button("recompile"))
+	{
+		delete bwShader;
+		bwShader = new Shader("bw.vert", "bw.frag");
+		std::cout << "recompiled" << std::endl;
 	}
 
 	//if (ImGui::Button("Save Image"))

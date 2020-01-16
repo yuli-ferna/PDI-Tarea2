@@ -2,4 +2,7 @@
 
 EDCompositeConv::EDCompositeConv() {}
 
-EDCompositeConv::~EDCompositeConv() {}
+EDCompositeConv::~EDCompositeConv() {
+	
+
+}

@@ -19,7 +19,8 @@ class Application
 	EDImage *img;
 	EDCompositeConv* composite;
 	EDConvolution* bw, grey;
-
+	
+	unsigned int texId = 0;
 	unsigned int texOGImg = 0;
 	int widthConv = 1;
 	int heightConv = 1;

@@ -6,10 +6,12 @@
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include <stb_image_write.h>
 
+Shader *bwShader = nullptr;
 
 unsigned int GetTexture(RawData* data, unsigned int imgWidth, unsigned int imgHeight)
 {
 	unsigned int tex;
+
 	glGenTextures(1, &tex);
 	glBindTexture(GL_TEXTURE_2D, tex);
 	// set the texture wrapping parameters
@@ -48,14 +50,15 @@ RawData* EDNegativeHA(RawData* data, unsigned int imgWidth, unsigned int imgHeig
 		out = new RawData[(imgWidth * imgHeight) * nChannels];
 	}
 
-	Shader shader("bw.vert", "bw.frag");
+	
 
-	unsigned int tex = GetTexture(data, imgWidth, imgWidth);
+	unsigned int tex = GetTexture(data, imgWidth, imgHeight);
 	Quad* q = Quad::Instance();
 	//glActiveTexture(tex):
-	shader.use();
+	bwShader->use();
 	glBindTexture(GL_TEXTURE_2D, tex);
-	shader.setInt("tex", 0);
+	bwShader->setInt("tex", 0);
+	bwShader->setInt("mode", 1);
 	q->Bind();
 	q->Draw();
 
@@ -64,6 +67,51 @@ RawData* EDNegativeHA(RawData* data, unsigned int imgWidth, unsigned int imgHeig
 	glDeleteTextures(1, &tex);
 	return out;
 }
+
+RawData* EDGreyscaleHA(RawData* data, unsigned int imgWidth, unsigned int imgHeight, RawData** outData, int nChannels)
+{
+
+	RawData* out = nullptr;
+
+	if (outData) // si el usuario quiere llenar un buffer que el maneje
+	{
+		if (*outData) // si el buffer ya tiene memoria asociada escribimos en el, asumimos que es el mismo tamaño de buffer que la imagen original
+		{
+			out = *outData;
+		}
+		else
+		{// sino reservamos memoria para ese buffer
+			out = new RawData[(imgWidth * imgHeight) * nChannels];
+			*outData = out;
+		}
+	}
+	else
+	{
+		out = new RawData[(imgWidth * imgHeight) * nChannels];
+	}
+
+
+
+	unsigned int tex = GetTexture(data, imgWidth, imgHeight);
+	Quad* q = Quad::Instance();
+	//glActiveTexture(tex):
+	bwShader->use();
+	glBindTexture(GL_TEXTURE_2D, tex);
+	bwShader->setInt("tex", 0);
+	bwShader->setInt("mode", 1);
+	q->Bind();
+	q->Draw();
+
+	glGetTexImage(GL_TEXTURE_2D, 0, GL_RGB, GL_UNSIGNED_BYTE, out);
+
+	glDeleteTextures(1, &tex);
+	return out;
+}
+
+
+
+
+
 
 bool EDInit()
 {
