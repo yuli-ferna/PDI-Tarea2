@@ -6,6 +6,11 @@ bool EDImage::TryLoad(const std::string& path, EDImage*& img) {
 	std::cout << "loading " << path << "\n";
 
 	img->data = stbi_load(path.data(), &img->width, &img->height, &img->nChannels, 0);
+
+	
+	//stbi_info(path.data());
+
+
 	img->widthChannels = img->width * img->nChannels;
 	return img->data;
 }

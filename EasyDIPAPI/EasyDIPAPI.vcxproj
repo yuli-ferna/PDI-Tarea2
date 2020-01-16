@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|x64">
       <Configuration>Debug</Configuration>
@@ -22,13 +22,13 @@
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <CharacterSet>Unicode</CharacterSet>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <CharacterSet>Unicode</CharacterSet>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -93,18 +93,18 @@
     <ClInclude Include="EasyDIPAPI\EDCompositeConv.h" />
     <ClInclude Include="EasyDIPAPI\EDConvolution.h" />
     <ClInclude Include="EasyDIPAPI\EDImage.h" />
-    <ClInclude Include="EasyDIPAPI\EDImageIterator.h" />
     <ClInclude Include="EasyDIPAPI\EDpch.h" />
-    <ClInclude Include="Shader.h" />
+    <ClInclude Include="EasyDIPAPI\Quad.h" />
+    <ClInclude Include="EasyDIPAPI\shaders\Shader.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="EasyDIPAPI\EDBaseConv.cpp" />
     <ClCompile Include="EasyDIPAPI\EDCompositeConv.cpp" />
     <ClCompile Include="EasyDIPAPI\EDConvolution.cpp" />
     <ClCompile Include="EasyDIPAPI\EDImage.cpp" />
-    <ClCompile Include="EasyDIPAPI\EDImageIterator.cpp" />
     <ClCompile Include="EasyDIPAPI\EDpch.cpp" />
-    <ClCompile Include="Shader.cpp" />
+    <ClCompile Include="EasyDIPAPI\Quad.cpp" />
+    <ClCompile Include="EasyDIPAPI\shaders\Shader.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\dependencies\glad\glad.vcxproj">

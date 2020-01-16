@@ -14,7 +14,7 @@ class Application
 {
 	//template <typename TT> using ptr = std::shared_ptr<TT>;
 	//ImGui::FileBrowser fileDialog;
-	
+	GLFWwindow *window;
 
 	EDImage *img;
 	EDCompositeConv* composite;
@@ -25,23 +25,22 @@ class Application
 	int heightConv = 1;
 	float color[7][7][4];
 	int pivotX = 0, pivotY = 0;
+	bool show_demo_window = true;
 public:
 	Application();
 	~Application();
 	void Save(EDImage* img, const std::string& path);
-
-	void Render()
-	{
-
-
-
-	}
+	void MainLoop();
+	void Render();
 	void ImGui();
 	
 	static void HelpMarker(const char* desc);
 
 };
 
+static void glfw_error_callback(int error, const char* description)
+{
+	fprintf(stderr, "Glfw Error %d: %s\n", error, description);
+}
 #endif // !1
-
 

@@ -11,10 +11,30 @@
 #include <algorithm>
 #include <functional>
 #include <glad/glad.h>
+#include <filesystem>
+
+#include "Quad.h"
+#include "shaders/Shader.h"
+//Shader
+using RawData = unsigned char;
 
 
-//#include "shader"
 
+
+unsigned int GetTexture(RawData* data, unsigned int imgWidth, unsigned int imgHeight);
+RawData* EDNegativeHA(RawData* data, unsigned int imgWidth, unsigned int imgHeight, RawData** outData = nullptr, int nChannels = 3);
+
+//void ForEachKernel()
+//{
+//
+//}
+
+//template <typename TT>
+//void ForEachPixel(TT* imgData, unsigned int)
+//{
+//	 
+//}
+//
 
 //
 //

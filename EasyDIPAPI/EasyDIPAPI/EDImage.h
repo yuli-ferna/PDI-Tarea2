@@ -13,7 +13,13 @@ class EDImage
 {
 public:
 	static bool TryLoad(const std::string& path, EDImage*& img);
+
 	static bool TrySave(const EDImage& img, const std::string& fileName);
+	static bool TrySave(const RawData* data, const std::string fileName, int width, int height, int nChannels) {
+		return stbi_write_png(fileName.data(), width, height, nChannels, data, nChannels * width);
+	}
+
+
 	static EDImage* CreateCanvas(const EDImage& other, EDImage* destiny = nullptr);
 	
 	unsigned char* Get(int x, int y) const;
@@ -53,11 +59,11 @@ public:
 		return colors;
 	}
 
-	static int GetUniqueColors(const EDImage& im)
+	static unsigned int GetUniqueColors(const EDImage& im)
 	{
 		return GetUniqueColors(im.data, im.width, im.height, im.nChannels);
 	}
-	static int GetUniqueColors(unsigned char * data, unsigned int width, unsigned int height, int nChannels)
+	static unsigned int GetUniqueColors(unsigned char * data, unsigned int width, unsigned int height, int nChannels)
 	{
 		unsigned int sz = width * height * nChannels;
 		std::unordered_map<int, int> colors;
@@ -68,7 +74,7 @@ public:
 			for (int channel = 0; channel < nChannels; channel++)
 			{
 				key |= data[ii + channel];
-				key << sizeof(char);
+				key = key << sizeof(char);
 			}
 			//if ((iterator it = colors.find(key)) != end(colors))
 			//{
@@ -81,12 +87,12 @@ public:
 		return colors.size();
 	}
 
+	unsigned char* data;
 private:
 
 	unsigned char* defColor = new unsigned char[4] { 0,0,0,0 };
 	size_t widthChannels;
 	int width, height, nChannels;
-	unsigned char* data;
 	EDImage();
 };
 
