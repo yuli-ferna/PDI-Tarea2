@@ -20,8 +20,13 @@ class Application
 	EDCompositeConv* composite;
 	EDConvolution* bw, grey;
 	
+
+
 	unsigned int texId = 0;
 	unsigned int texOGImg = 0;
+
+	int windowWidth;
+	int windowHeight;
 	int widthConv = 1;
 	int heightConv = 1;
 	float color[7][7][4];

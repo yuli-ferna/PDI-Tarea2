@@ -59,6 +59,8 @@ RawData* EDNegativeHA(RawData* data, unsigned int imgWidth, unsigned int imgHeig
 	glBindTexture(GL_TEXTURE_2D, tex);
 	bwShader->setInt("tex", 0);
 	bwShader->setInt("mode", 1);
+	bwShader->setFloat("imgWidth", imgWidth);
+	bwShader->setFloat("imgHeight", imgHeight);
 	q->Bind();
 	q->Draw();
 

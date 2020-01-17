@@ -33,7 +33,6 @@ Application::Application() {
 	// Create window with graphics context
 	 window = glfwCreateWindow(800, 600, "Dear ImGui GLFW+OpenGL3 example", NULL, NULL);
 	 if (window == NULL) {
-
 		__debugbreak();
 		return;
 	}
@@ -77,13 +76,6 @@ Application::Application() {
 		std::cout << "img load fail\n";
 		return;
 	}
-
-	bwShader = new Shader("bw.vert", "bw.frag");
-
-	std::unique_ptr<RawData> negative{ EDNegativeHA(img->data, img->GetWidth(), img->GetHeight()) };
-	texId = GetTexture(negative.get(), img->GetWidth(), img->GetHeight());
-
-
 
 	//std::string pathNegative = "negative.png";
 	//EDImage::TrySave(negative.get(), pathNegative, img->GetWidth(), img->GetHeight(), img->GetNChannels());
@@ -242,9 +234,8 @@ void Application::MainLoop()
 {
 	while (!glfwWindowShouldClose(window))
 	{
-		int display_w, display_h;
-		glfwGetFramebufferSize(window, &display_w, &display_h);
-		glViewport(0, 0, display_w, display_h);
+		glfwGetFramebufferSize(window, &windowWidth, &windowHeight);
+		glViewport(0, 0, windowWidth, windowHeight);
 		glClearColor(0, 0, 0, 1);
 		glClear(GL_COLOR_BUFFER_BIT);
 		glfwPollEvents();
@@ -272,15 +263,17 @@ void Application::MainLoop()
 
 void Application::Render()
 {
+
 	Quad *quad = Quad::Instance();
+	if (bwShader) {
+		bwShader->use();
+		glActiveTexture(0);
+		glBindTexture(GL_TEXTURE_2D, texId);
+		bwShader->setInt("tex", 0);
+		quad->Bind();
+		quad->Draw();
 
-	bwShader->use();
-	glActiveTexture(0);
-	glBindTexture(GL_TEXTURE_2D, texId);
-	bwShader->setInt("tex", 0);
-	quad->Bind();
-	quad->Draw();
-
+	}
 }
 
 void Application::ImGui()
@@ -306,8 +299,6 @@ void Application::ImGui()
 	{
 		pivotY = clamp(heightConv - 1, 1, pivotY);
 	}
-
-
 
 	ImGui::Text("Color button with Picker:");
 	ImGui::SameLine(); HelpMarker("With the ImGuiColorEditFlags_NoInputs flag you can hide all the slider/text inputs.\nWith the ImGuiColorEditFlags_NoLabel flag you can pass a non-empty label which will only be used for the tooltip and picker popup.");
@@ -383,8 +374,84 @@ void Application::ImGui()
 	if (ImGui::Button("recompile"))
 	{
 		delete bwShader;
-		bwShader = new Shader("bw.vert", "bw.frag");
+
+
+
+		std::string vert = Shader::GetSrcFromFile("bw.vert");
+		//std::string frag = init + end;
+		std::string init("#version 330 core\n"
+			"in vec2 fragPos;\n"
+			"uniform sampler2D tex;\n"
+			"uniform int mode = 1;\n"
+			"uniform float imgWidth;\n"
+			"uniform float imgHeight;\n"
+			"out vec4 fragColor;\n"
+
+			"void main(){\n"
+			"vec2 actPos = (fragPos.xy+1)/2.f;\n"
+			"vec3 texColor = texture(tex, actPos).rgb;\n"
+			"vec2 d = vec2(1.f/imgWidth, 1.f/imgHeight);\n"
+
+			"	\n"
+			"int mode = 2;\n"
+			"if(mode == 0){\n"
+			"texColor = 1.f - texColor;\n"
+			"}else if(mode == 1){\n"
+			"vec3 grey = vec3(0.2125f, 0.7154f, 0.0721f);\n"
+			"float g = dot(texColor, grey);\n"
+			"texColor = vec3(g);\n"
+			"}\n"
+			"else if (mode == 2){\n"
+			"vec3 avg = vec3(0);\n"
+			"\n"
+			"\n"
+
+			"vec2 uAcum = vec2(0);\n"
+
+			"int width = 3;\n"
+			"int height = 3;\n"
+			"		 \n"
+			"float conv[9] = float[](\n"
+			"0.1f, 0.1f, 0.1f,\n"
+			"0.1f, 0.1f, 0.1f,\n"
+			"0.1f, 0.1f, 0.1f\n"
+			");\n"
+			"\n"
+
+			"//		float conv[9] = float[](\n"
+			"//			-1.f, 0, 1.f,\n"
+			"//			-1.f, 0, 1.f,\n"
+			"//			-1.f, 0, 1.f\n"
+			"//		);\n"
+			"\n"
+		);
+std::string end(
+		"int convI = 0;\n"
+		"for(int yy = 0; yy < height; yy++, uAcum.y += d.y){\n"
+			"for(int xx = 0; xx < width; xx++, uAcum.x += d.x, convI++){\n"
+				"vec2 nUv = actPos + uAcum;\n"
+				"avg+= texture(tex, nUv).rgb * conv[convI];\n"
+			"}\n"
+		"}\n"
+
+"//		avg = texture(tex, actPos ).rgb;\n"
+		"texColor = avg;\n"
+	"}\n"
+"\n"
+"\n"
+"\n"
+
+	"fragColor = vec4(texColor,1);\n"
+			"}\n");
+
+		std::string frag = init + end;
+		bwShader = Shader::FromString(vert.c_str(), frag.c_str());
 		std::cout << "recompiled" << std::endl;
+
+		std::unique_ptr<RawData> negative{ EDNegativeHA(img->data, img->GetWidth(), img->GetHeight()) };
+		texId = GetTexture(negative.get(), img->GetWidth(), img->GetHeight());
+
+
 	}
 
 	//if (ImGui::Button("Save Image"))

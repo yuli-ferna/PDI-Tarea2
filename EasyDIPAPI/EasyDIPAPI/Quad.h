@@ -10,7 +10,7 @@
 
 class Quad {
 	static Quad* instance;
-	static unsigned int VBO, VAO, EBO;
+	static unsigned int VBO, VAO;
 	Quad();
 	~Quad();
 public:
