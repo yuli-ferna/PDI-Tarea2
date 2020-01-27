@@ -1,68 +1,72 @@
-"\n"
-"#version 330 core\n"
-"\n"
+#version 330 core
 
-"in vec2 fragPos;\n"
+in vec2 fragPos;
+uniform sampler2D tex;
+uniform int mode = 1;
+uniform float imgWidth;
+uniform float imgHeight;
+uniform float test;
 
-"uniform sampler2D tex;\n"
-"uniform int mode = 1;\n"
-"uniform float imgWidth;\n"
-"uniform float imgHeight;\n"
 
-"out vec4 fragColor;\n"
 
-"void main(){\n"
-	"vec2 actPos = (fragPos.xy+1)/2.f;\n"
-	"vec3 texColor = texture(tex, actPos).rgb;\n"
-	"vec2 d = vec2(1.f/imgWidth, 1.f/imgHeight);\n"
+out vec4 fragColor;
 
-"	\n"
-	"int mode = 2;\n"
-	"if(mode == 0){\n"
-		"texColor = 1.f - texColor;\n"
-	"}else if(mode == 1){\n"
-		"vec3 grey = vec3(0.2125f, 0.7154f, 0.0721f);\n"
-		"float g = dot(texColor, grey);\n"
-		"texColor = vec3(g);\n"
-	"}\n"
-	"else if (mode == 2){\n"
-		"vec3 avg = vec3(0);\n"
-"\n"
-"\n"
 
-		"vec2 uAcum = vec2(0);\n"
+void main(){
+	vec2 actPos = (fragPos.xy+1)/2.f;
+// actPos = fragColor.xy;
 
-		"int width = 3;\n"
-		"int height = 3;\n"
-"		 \n"
-		"float conv[9] = float[](\n"
-			"0.1f, 0.1f, 0.1f,\n"
-			"0.1f, 0.1f, 0.1f,\n"
-			"0.1f, 0.1f, 0.1f\n"
-		");\n"
-"\n"
+	
+	actPos.y = 1-actPos.y;
+	vec3 texColor = texture(tex, actPos).rgb;
+	vec2 d = vec2(1.f/imgWidth, 1.f/imgHeight);
+	int mode = 1;
 
-"//		float conv[9] = float[](\n"
-"//			-1.f, 0, 1.f,\n"
-"//			-1.f, 0, 1.f,\n"
-"//			-1.f, 0, 1.f\n"
-"//		);\n"
-"\n"
+	float g;
+	if(mode == 0){
+		texColor =texColor ;
+	}else if(mode == 1){
+		vec3 grey = vec3(0.2125f, 0.7154f, 0.0721f);
+		g = dot(texColor, grey);
+		texColor = vec3(g);
+	}
+	else if (mode == 2){
+		vec3 avg = vec3(0);
 
-		"int convI = 0;\n"
-		"for(int yy = 0; yy < height; yy++, uAcum.y += d.y){\n"
-			"for(int xx = 0; xx < width; xx++, uAcum.x += d.x, convI++){\n"
-				"vec2 nUv = actPos + uAcum;\n"
-				"avg+= texture(tex, nUv).rgb * conv[convI];\n"
-			"}\n"
-		"}\n"
 
-"//		avg = texture(tex, actPos ).rgb;\n"
-		"texColor = avg;\n"
-	"}\n"
-"\n"
-"\n"
-"\n"
+		vec2 uAcum = vec2(0);
+		int width = 3;
+		int height = 3;
+		 
+		float conv[9] = float[](
+			0.1f, 0.1f, 0.1f,
+			0.1f, 0.1f, 0.1f,
+			0.1f, 0.1f, 0.1f
+		);
 
-	"fragColor = vec4(texColor,1);\n"
-"}\n"																									    \n"
+//		float conv[9] = float[](
+//			-1.f, 0, 1.f,
+//			-1.f, 0, 1.f,
+//			-1.f, 0, 1.f
+//		);
+
+		int convI = 0;
+		for(int yy = 0; yy < height; yy++, uAcum.y += d.y){
+			for(int xx = 0; xx < width; xx++, uAcum.x += d.x, convI++){
+				vec2 nUv = actPos + uAcum;
+				avg+= texture(tex, nUv).rgb * conv[convI];
+			}
+		}
+//		avg = texture(tex, actPos ).rgb;
+		texColor = avg;
+	}
+
+	if(g < 0.6f){
+		texColor.rgb = vec3(0.f);
+	}
+
+	
+	fragColor = vec4(texColor,1);
+	// fragColor=vec4(test, 0,0,1);
+	// fragColor = vec4(1,0,0,1);
+}																						    

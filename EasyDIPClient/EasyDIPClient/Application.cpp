@@ -67,140 +67,23 @@ Application::Application() {
 	ImGui_ImplOpenGL3_Init(glsl_version);
 
 
-	if (EDImage::TryLoad("../chikis.jpg", img))
-	{
-		std::cout << "img loaded successfully\n";
-	}
-	else
-	{
-		std::cout << "img load fail\n";
-		return;
-	}
+	//CG::Model model = CG::Load("../Models/modelo.obj", );
+	//models.push_back(model);
+	//	Scene.LoadModel("pelota.obj")
 
-	//std::string pathNegative = "negative.png";
-	//EDImage::TrySave(negative.get(), pathNegative, img->GetWidth(), img->GetHeight(), img->GetNChannels());
+	//	Scene.add("pelota");
+
+	//Scene.Save("escena_de_prueba");
+	//Scene.Load("escena_de_prueba.graficas");
 	//
-	/*NegativeHA(img->data, imgWidth, imgHeight, nChannels, strideX, strideY, conv, convWidth, convHeight);*/
-
-	//{
-	//	std::unique_ptr<EDBaseConvolution> mv10{ EDConvolution::CreateCustom({ 0,0,0,0,0,0,0,0,0,1 }, 10, 1, 9, 0) };
-	//	std::unique_ptr<EDImage> mvImg{ mv10->ApplyConvolution(*img) };
-	//	Save(mvImg.get(), "mv.png");
+	//void Scene::Load(std::string path) {
+	//	LoadScene(path);
 	//}
-
-
-
-
-	//bw = EDConvolution::CreateNegative();
-	//composite = EDCompositeConv::Create();
-
-	//std::unique_ptr<EDConvolution> blur{ EDConvolution::CreateCustom(
-	//	EDConvolution::Normalize({
-	//		1,2,1,
-	//		2,3,2,
-	//		1,2,1
-	//	}),
-	//	{ 0,0,0,0 }, 3, 3, 1, 1) };
-
-	//std::unique_ptr<EDConvolution> blurPower{ EDConvolution::CreateCustom(
-	//EDConvolution::Normalize({
-	//	1,2,3,2,1,
-	//	2,4,6,4,2,
-	//	3,6,8,6,3,
-	//	2,4,6,4,2,
-	//	1,2,3,2,1
-	//}),
-	//{ 0,0,0,0 }, 5, 5, 2, 2) };
-
-
-	//std::unique_ptr<EDConvolution> sobelX{ EDConvolution::CreateCustom(
-	//{
-	//	1, 2, 1,
-	//	0, 0, 0,
-	//	-1, -2, 1,
-	//},
-	//{ 0,0,0,0 }, 3, 3, 1, 1) };
-
-	//std::unique_ptr<EDConvolution> sobelY{ EDConvolution::CreateCustom(
-	//{
-	//	-1 , 0, 1,
-	//	-2 , 0, 2,
-	//	-1 , 0, 1,
-	//},
-	//{ 0,0,0,0 }, 3, 3, 1, 1) };
-
-	//std::unique_ptr<EDConvolution> average{ EDConvolution::CreateCustom(
-	//EDConvolution::Normalize({
-	//	1,1,1,
-	//	1,1,1,
-	//	1,1,1,
-	//}),
-	//{ 0,0,0,0 }, 3, 3, 1, 1) };
-
-	//std::unique_ptr<EDConvolution> laplacian{ EDConvolution::CreateCustom(
-	//{
-	//	-1,-1,-1,
-	//	-1,8,-1,
-	//	-1,-1,-1,
-	//},
-	//{ 0,0,0,0 }, 3, 3, 1, 1) };
-
-
-	//composite->push_back(bw);
-	//composite->push_back(bw);
-	
-	{
-		//std::unique_ptr<EDImage> bwImg{bw->ApplyConvolution(*img)};
-		//Save(bwImg.get(), "bw.png");
-
-		//std::unique_ptr<EDImage> srcDest{ bw->ApplyConvolution(*img, img) };
-		//Save(srcDest.get(), "srcDest.png");
-
-
-		//std::unique_ptr<EDImage> compositeImg{ composite->ApplyConvolution(*img) };
-		//Save(compositeImg.get(), "composite.png");
-
-
-		//std::unique_ptr<EDImage> blurImg{ blur->ApplyConvolution(*img) };
-		//Save(blurImg.get(), "blurImg.png");
-
-		//std::unique_ptr<EDImage> blurPowerImg { blurPower->ApplyConvolution(*img) };
-		//Save(blurPowerImg.get(), "blurPowerImg.png");
-
-		//std::unique_ptr<EDImage> sobelXImg{ sobelX->ApplyConvolution(*img) };
-		//Save(sobelXImg.get(), "sobelXImg.png");
-
-
-		//std::unique_ptr<EDImage> sobelYImg{ sobelY->ApplyConvolution(*img) };
-		//Save(sobelYImg.get(), "sobelYImg.png");
-
-		//std::unique_ptr<EDImage> averageImg{ average->ApplyConvolution(*img) };
-		//Save(averageImg.get(), "averageImg.png");
-
-		//std::unique_ptr<EDImage> laplacianImg{ laplacian->ApplyConvolution(*img) };
-		//Save(laplacianImg.get(), "laplacianImg.png");
-		
-	/*
-
-		std::unique_ptr<EDImage> bwbwImage{ bw->ApplyConvolution(*bwImg) };
-
-		Save(bwbwImage.get(), "bwbw.png");
-
-	*/
-
-
-
-		//std::unique_ptr<EDConvolution> copyPassConv{ EDConvolution::CreateCopyPass() };
-		//std::unique_ptr<EDImage> copyPass{ copyPassConv->ApplyConvolution(*img) };
-
-		//Save(copyPass.get(), "copyPass.png");
-}
-
 
 	// (optional) set browser properties
 	//fileDialog.SetTitle("title");
 	//fileDialog.SetTypeFilters({ ".jpg", ".png", ".jpeg" });
-
+	Init();
 }
 
 Application::~Application() {
@@ -218,17 +101,6 @@ Application::~Application() {
 	//delete bw;
 }
 
-void Application::Save(EDImage* img, const std::string& path)
-{
-	if (EDImage::TrySave(*img, path))
-	{
-		std::cout << "success " << path << " save \n";
-	}
-	else
-	{
-		std::cout << "failed " << path << " save \n";
-	}
-}
 
 void Application::MainLoop()
 {
@@ -270,6 +142,7 @@ void Application::Render()
 		glActiveTexture(0);
 		glBindTexture(GL_TEXTURE_2D, texId);
 		bwShader->setInt("tex", 0);
+		bwShader->setFloat("test", test);
 		quad->Bind();
 		quad->Draw();
 
@@ -278,83 +151,23 @@ void Application::Render()
 
 void Application::ImGui()
 {
+
+	ImGui::SliderFloat("test", &test, 0, 1);
+
 	ImGui::Begin("Convolution Editor");
 
-	if (ImGui::InputInt("Convolution Height", &heightConv))
-	{
-		heightConv = clamp(7, 1, heightConv);
-	}
-
-	if (ImGui::InputInt("Convolution Width", &widthConv))
-	{
-		widthConv = clamp(7, 1, widthConv);
-	}
-
-	if (ImGui::InputInt("Pivot X", &pivotX))
-	{
-		pivotX = clamp(widthConv-1, 0, pivotX);
-	}
-
-	if (ImGui::InputInt("Pivot Y", &pivotY))
-	{
-		pivotY = clamp(heightConv - 1, 1, pivotY);
-	}
 
 	ImGui::Text("Color button with Picker:");
 	ImGui::SameLine(); HelpMarker("With the ImGuiColorEditFlags_NoInputs flag you can hide all the slider/text inputs.\nWith the ImGuiColorEditFlags_NoLabel flag you can pass a non-empty label which will only be used for the tooltip and picker popup.");
 
 
-	static std::vector<const char *> names = {
+	static std::vector<const char*> names = {
 		"0,0",
 		"1,0",
 		"2,0",
-		"3,0",
-		"4,0",
-		"5,0",
-		"6,0",
-		"0,1",
-		"1,1",
-		"2,1",
-		"3,1",
-		"4,1",
-		"5,1",
-		"6,1",
-		"0,2",
-		"1,2",
-		"2,2",
-		"3,2",
-		"4,2",
-		"5,2",
-		"6,2",
-		"0,3",
-		"1,3",
-		"2,3",
-		"3,3",
-		"4,3",
-		"5,3",
-		"6,3",
-		"0,4",
-		"1,4",
-		"2,4",
-		"3,4",
-		"4,4",
-		"5,4",
-		"6,4",
-		"0,5",
-		"1,5",
-		"2,5",
-		"3,5",
-		"4,5",
-		"5,5",
-		"6,5",
-		"0,6",
-		"1,6",
-		"2,6",
-		"3,6",
-		"4,6",
-		"5,6",
-		"6,6",
 	};
+
+
 
 	for (size_t yy = 0, nn = 0; yy < heightConv; yy++)
 	{
@@ -373,83 +186,16 @@ void Application::ImGui()
 
 	if (ImGui::Button("recompile"))
 	{
-		delete bwShader;
+		//delete bwShader;
+		//std::string vert = Shader::GetSrcFromFile("bw.vert");
+		//std::string frag = Shader::GetSrcFromFile("bw.frag");
 
 
+		//bwShader = Shader::FromString(vert.c_str(), frag.c_str());
+		//std::cout << "recompiled" << std::endl;
 
-		std::string vert = Shader::GetSrcFromFile("bw.vert");
-		//std::string frag = init + end;
-		std::string init("#version 330 core\n"
-			"in vec2 fragPos;\n"
-			"uniform sampler2D tex;\n"
-			"uniform int mode = 1;\n"
-			"uniform float imgWidth;\n"
-			"uniform float imgHeight;\n"
-			"out vec4 fragColor;\n"
-
-			"void main(){\n"
-			"vec2 actPos = (fragPos.xy+1)/2.f;\n"
-			"vec3 texColor = texture(tex, actPos).rgb;\n"
-			"vec2 d = vec2(1.f/imgWidth, 1.f/imgHeight);\n"
-
-			"	\n"
-			"int mode = 2;\n"
-			"if(mode == 0){\n"
-			"texColor = 1.f - texColor;\n"
-			"}else if(mode == 1){\n"
-			"vec3 grey = vec3(0.2125f, 0.7154f, 0.0721f);\n"
-			"float g = dot(texColor, grey);\n"
-			"texColor = vec3(g);\n"
-			"}\n"
-			"else if (mode == 2){\n"
-			"vec3 avg = vec3(0);\n"
-			"\n"
-			"\n"
-
-			"vec2 uAcum = vec2(0);\n"
-
-			"int width = 3;\n"
-			"int height = 3;\n"
-			"		 \n"
-			"float conv[9] = float[](\n"
-			"0.1f, 0.1f, 0.1f,\n"
-			"0.1f, 0.1f, 0.1f,\n"
-			"0.1f, 0.1f, 0.1f\n"
-			");\n"
-			"\n"
-
-			"//		float conv[9] = float[](\n"
-			"//			-1.f, 0, 1.f,\n"
-			"//			-1.f, 0, 1.f,\n"
-			"//			-1.f, 0, 1.f\n"
-			"//		);\n"
-			"\n"
-		);
-std::string end(
-		"int convI = 0;\n"
-		"for(int yy = 0; yy < height; yy++, uAcum.y += d.y){\n"
-			"for(int xx = 0; xx < width; xx++, uAcum.x += d.x, convI++){\n"
-				"vec2 nUv = actPos + uAcum;\n"
-				"avg+= texture(tex, nUv).rgb * conv[convI];\n"
-			"}\n"
-		"}\n"
-
-"//		avg = texture(tex, actPos ).rgb;\n"
-		"texColor = avg;\n"
-	"}\n"
-"\n"
-"\n"
-"\n"
-
-	"fragColor = vec4(texColor,1);\n"
-			"}\n");
-
-		std::string frag = init + end;
-		bwShader = Shader::FromString(vert.c_str(), frag.c_str());
-		std::cout << "recompiled" << std::endl;
-
-		std::unique_ptr<RawData> negative{ EDNegativeHA(img->data, img->GetWidth(), img->GetHeight()) };
-		texId = GetTexture(negative.get(), img->GetWidth(), img->GetHeight());
+		//std::unique_ptr<RawData> negative{ EDNegativeHA(img->data, img->GetWidth(), img->GetHeight()) };
+		//texId = GetTexture(negative.get(), img->GetWidth(), img->GetHeight());
 
 
 	}
@@ -479,6 +225,8 @@ std::string end(
 	ImGui::End();
 
 }
+
+void Application::Init() {}
 
 void Application::HelpMarker(const char* desc)
 {

@@ -43,7 +43,7 @@ project "GLFW"
 		}
 
 	filter "system:windows"
-		systemversion "8.1"
+		systemversion "latest"
 		staticruntime "On"
 
 		files

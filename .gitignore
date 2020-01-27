@@ -9,6 +9,8 @@
 **.xcodeproj
 **/bin/
 **/bin-int
+**.vcxproj
+
 
 # User-specific files
 *.rsuser

@@ -1,9 +1,8 @@
 #include "EDClientpch.h"
 
 
-#include "EasyDIPAPI/EDImage.h"
-#include "EasyDIPAPI/EDConvolution.h"
-#include "EasyDIPAPI/EDCompositeConv.h"
+
+#include "EasyDIPAPI/Loaders.h"
 
 
 
@@ -12,15 +11,10 @@
 
 class Application
 {
+	float test = 0;
 	//template <typename TT> using ptr = std::shared_ptr<TT>;
 	//ImGui::FileBrowser fileDialog;
 	GLFWwindow *window;
-
-	EDImage *img;
-	EDCompositeConv* composite;
-	EDConvolution* bw, grey;
-	
-
 
 	unsigned int texId = 0;
 	unsigned int texOGImg = 0;
@@ -35,10 +29,11 @@ class Application
 public:
 	Application();
 	~Application();
-	void Save(EDImage* img, const std::string& path);
+	
 	void MainLoop();
 	void Render();
 	void ImGui();
+	void Init();
 	
 	static void HelpMarker(const char* desc);
 
