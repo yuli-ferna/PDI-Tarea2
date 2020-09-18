@@ -1,22 +1,19 @@
-# CG3-P1
+# El template
 
-cuando clickeas el script genproject te saldrá el proyecto de visual studio.
+## App
 
-No añadas librerías usando la interfaz gráfica de visual studio porque esas dependencias se perderan.
+para poder correr el proyecto debes seguir los siguientes pasos 
+1. Clonar el proyecto
+2. Clickear el script genproject.bat
+3. [Descargar opencv2](https://sourceforge.net/projects/opencvlibrary/)
+4. Hacer doble click en el archivo descargado para extraerlo
+5. Copiar los dll de la carpeta `opencv/build/x64/vc1/bin` dentro de la carpeta `PDI-Template/App/bin/Debug/` del proyecto
 
-Todas esas librerías deben incluirse editando el archivo premake5.lua
 
 
-## El proyecto 
 
-# EasyDIPAPI
-Contiene todo el código relacionado a la API del proyecto y es donde haremos el procesamiento de las imágenes
+## Notas
 
-# EasyDIPBenchmark
-Contiene todas las pruebas de la app y las mediciones del tiempo, debería exportar un archivo csv para que podamos hacer las gráficas en excel del proyecto
-
-# EasyDIPClient
-Interfaz gráfica de la app que permite hacer un preview de todas las funciones de la API.
-
-Acá solo se utiliza la API de EasyDIPAPI para trabajar en la app
-
+* Sientanse libres de hacer las preguntas o cambios al template por medio de issues
+* [Aquí está la documentacion de opencv2](https://docs.opencv.org/4.4.0/)
+* Para construir el proyecto se usa [premake5](https://premake.github.io). Para agregar librerías se debe modificar el script premake5.lua y correr el script genproject.bat 
