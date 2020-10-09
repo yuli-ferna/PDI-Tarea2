@@ -84,11 +84,10 @@ Application::~Application() {
 
 void Application::MainLoop()
 {
+	img = cv::imread("../momo.jpg");
+	cv::namedWindow("momo", 1);
 
-	cv::VideoCapture cap(0);
-	if (!cap.isOpened()) return;
-	cv::Mat frame, edges;
-	cv::namedWindow("edges", 1);
+
 	while (!glfwWindowShouldClose(window))
 	{
 		glfwGetFramebufferSize(window, &windowWidth, &windowHeight);
@@ -101,16 +100,7 @@ void Application::MainLoop()
 		ImGui_ImplGlfw_NewFrame();
 		ImGui::NewFrame();
 		
-
-		ImGui::SliderInt("Low Threshold", &lowThreshold, 0, highThreshold);
-		ImGui::SliderInt("High Threshold", &highThreshold, lowThreshold, 100);
-
-		cap >> frame;
-		cvtColor(frame, edges, cv::COLOR_BGR2GRAY);
-		GaussianBlur(edges, edges, cv::Size(7, 7), 1.5, 1.5);
-		Canny(edges, edges, lowThreshold, lowThreshold * 3, 3);
-		imshow("edges", edges);
-		if (cv::waitKey(30) >= 0) break;
+		// Your code here
 
 		if (show_demo_window)
 			ImGui::ShowDemoWindow(&show_demo_window);
@@ -134,30 +124,40 @@ void Application::Render()
 
 void Application::ImGui()
 {
-
+	// Or here
 	ImGui::Begin("Convolution Editor");
 
-
-	ImGui::Text("Color button with Picker:");
-	ImGui::SameLine(); HelpMarker("With the ImGuiColorEditFlags_NoInputs flag you can hide all the slider/text inputs.\nWith the ImGuiColorEditFlags_NoLabel flag you can pass a non-empty label which will only be used for the tooltip and picker popup.");
-
-
-	if (ImGui::Button("recompile"))
+	if (ImGui::Button("Show img and save"))
 	{
-		//delete bwShader;
-		//std::string vert = Shader::GetSrcFromFile("bw.vert");
-		//std::string frag = Shader::GetSrcFromFile("bw.frag");
 
 
-		//bwShader = Shader::FromString(vert.c_str(), frag.c_str());
-		//std::cout << "recompiled" << std::endl;
 
-		//std::unique_ptr<RawData> negative{ EDNegativeHA(img->data, img->GetWidth(), img->GetHeight()) };
-		//texId = GetTexture(negative.get(), img->GetWidth(), img->GetHeight());
+		if (img.empty())
+		{
+
+			std::cout << "Couldn't load image";
+			__debugbreak();
+		}
+		cv::cvtColor(img, img, cv::COLOR_BGR2RGBA);
+		
+		glGenTextures(1, &texture);
+		glBindTexture(GL_TEXTURE_2D, texture);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, img.cols, img.rows, 0, GL_RGBA, GL_UNSIGNED_BYTE, img.data);
+
+		cols = img.cols;
+		rows = img.rows;
 
 
+
+		cv::imwrite("../out.jpg", img);
 	}
 
+	cv::imshow("momo", img);
+	ImGui::Text("size = %d x %d", cols, rows);
+	ImGui::Image((void*)(intptr_t)texture, ImVec2(cols, rows));
 
 	ImGui::End();
 

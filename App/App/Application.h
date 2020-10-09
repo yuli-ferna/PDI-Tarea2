@@ -13,9 +13,9 @@ class Application
 	bool show_demo_window = true;
 
 	int lowThreshold = 7, highThreshold = 50;
-
-
-
+	unsigned int texture;
+	unsigned int cols, rows;
+	cv::Mat img;
 public:
 	Application();
 	~Application();
