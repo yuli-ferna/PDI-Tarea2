@@ -22,7 +22,9 @@ public:
 	
 	void MainLoop();
 	void Render();
+	void UI();
 	void ImGui();
+	void ImageVisor();
 	void Init();
 	
 	static void HelpMarker(const char* desc);

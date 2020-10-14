@@ -56,8 +56,8 @@ Application::Application() {
 	//io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
 
 	// Setup Dear ImGui style
-	ImGui::StyleColorsDark();
-	//ImGui::StyleColorsClassic();
+	//ImGui::StyleColorsDark();
+	ImGui::StyleColorsClassic();
 
 	// Setup Platform/Renderer bindings
 	ImGui_ImplGlfw_InitForOpenGL(window, true);
@@ -85,7 +85,8 @@ Application::~Application() {
 void Application::MainLoop()
 {
 	img = cv::imread("../momo.jpg");
-	cv::namedWindow("momo", 1);
+	//cv::namedWindow("momo", 1);
+	cv::cvtColor(img, img, cv::COLOR_BGR2RGBA);
 
 
 	while (!glfwWindowShouldClose(window))
@@ -105,7 +106,8 @@ void Application::MainLoop()
 		if (show_demo_window)
 			ImGui::ShowDemoWindow(&show_demo_window);
 
-		ImGui();
+		// ImGui
+		UI();
 
 		// Rendering
 		ImGui::Render();
@@ -122,41 +124,81 @@ void Application::Render()
 {
 }
 
+void Application::UI() {
+	ImGui();
+	ImageVisor();
+}
+
 void Application::ImGui()
 {
-	// Or here
-	ImGui::Begin("Convolution Editor");
 
-	if (ImGui::Button("Show img and save"))
+	if (ImGui::BeginMainMenuBar())
 	{
-
-
-
-		if (img.empty())
+		if (ImGui::BeginMenu("File"))
 		{
+			//if (ImGui::MenuItem("New")) {}
+			if (ImGui::MenuItem("Open", "Ctrl+O")) {}
+			if (ImGui::MenuItem("Save", "Ctrl+S")) {
+				cv::cvtColor(img, img, cv::COLOR_RGBA2BGR);
+				cv::imwrite("../out.jpg", img);
+				cv::cvtColor(img, img, cv::COLOR_BGR2RGBA); 
 
-			std::cout << "Couldn't load image";
-			__debugbreak();
+			}
+
+			ImGui::EndMenu();
 		}
-		cv::cvtColor(img, img, cv::COLOR_BGR2RGBA);
 		
-		glGenTextures(1, &texture);
-		glBindTexture(GL_TEXTURE_2D, texture);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-		glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, img.cols, img.rows, 0, GL_RGBA, GL_UNSIGNED_BYTE, img.data);
-
-		cols = img.cols;
-		rows = img.rows;
-
-
-
-		cv::imwrite("../out.jpg", img);
+		ImGui::EndMainMenuBar();
 	}
 
+
+	// Or here
+	ImGui::Begin("Editor");
+	if (ImGui::CollapsingHeader("Info"))
+	{
+		ImGui::Text("size = %d x %d", cols, rows);
+
+	}
+	//if (ImGui::Button("Show img and save"))
+	//{
+
+	//	if (img.empty())
+	//	{
+
+	//		std::cout << "Couldn't load image";
+	//		__debugbreak();
+	//	}
+	//	
+
+
+	//	//cv::imwrite("../out.jpg", img);
+	//}
+
+	
+	ImGui::End();
+
+}
+
+void Application::ImageVisor()
+{
+	// Or here
+	ImGui::Begin("Image");
+
+	
+	glGenTextures(1, &texture);
+	glBindTexture(GL_TEXTURE_2D, texture);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, img.cols, img.rows, 0, GL_RGBA, GL_UNSIGNED_BYTE, img.data);
+
+	cols = img.cols;
+	rows = img.rows;
+	/*cv::cvtColor(img, img, cv::COLOR_RGBA2BGR);
 	cv::imshow("momo", img);
-	ImGui::Text("size = %d x %d", cols, rows);
+	cv::cvtColor(img, img, cv::COLOR_BGR2RGBA);*/
+
+	//ImGui::Text("size = %d x %d", cols, rows);
 	ImGui::Image((void*)(intptr_t)texture, ImVec2(cols, rows));
 
 	ImGui::End();
