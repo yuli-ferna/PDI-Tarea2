@@ -16,6 +16,7 @@ class Application
 	unsigned int texture;
 	unsigned int cols, rows;
 	cv::Mat img;
+	Image image;
 public:
 	Application();
 	~Application();

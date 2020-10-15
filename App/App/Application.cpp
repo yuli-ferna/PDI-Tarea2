@@ -84,9 +84,13 @@ Application::~Application() {
 
 void Application::MainLoop()
 {
-	img = cv::imread("../momo.jpg");
+	std::string path = "../momo.jpg";
+	image = Image(path);
+	//img = image.mat;
+	//img = cv::imread("../momo.jpg");
 	//cv::namedWindow("momo", 1);
-	cv::cvtColor(img, img, cv::COLOR_BGR2RGBA);
+	//image.BGR2RGBA();
+	//cv::cvtColor(img, img, cv::COLOR_BGR2RGBA);
 
 
 	while (!glfwWindowShouldClose(window))
@@ -139,15 +143,19 @@ void Application::ImGui()
 			//if (ImGui::MenuItem("New")) {}
 			if (ImGui::MenuItem("Open", "Ctrl+O")) {}
 			if (ImGui::MenuItem("Save", "Ctrl+S")) {
-				cv::cvtColor(img, img, cv::COLOR_RGBA2BGR);
-				cv::imwrite("../out.jpg", img);
-				cv::cvtColor(img, img, cv::COLOR_BGR2RGBA); 
+				//cv::cvtColor(img, img, cv::COLOR_RGBA2BGR);
+
+				//cv::imwrite("../out.jpg", image.mat);
+				image.Save("../out.jpg");
+
+
+				//cv::cvtColor(img, img, cv::COLOR_BGR2RGBA); 
 
 			}
 
 			ImGui::EndMenu();
 		}
-		
+
 		ImGui::EndMainMenuBar();
 	}
 
@@ -159,6 +167,7 @@ void Application::ImGui()
 		ImGui::Text("size = %d x %d", cols, rows);
 
 	}
+	
 	//if (ImGui::Button("Show img and save"))
 	//{
 
@@ -189,12 +198,13 @@ void Application::ImageVisor()
 	glBindTexture(GL_TEXTURE_2D, texture);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, img.cols, img.rows, 0, GL_RGBA, GL_UNSIGNED_BYTE, img.data);
+	//glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);
+	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, image.mat.cols, image.mat.rows, 0, GL_BGR, GL_UNSIGNED_BYTE, image.mat.data);
 
-	cols = img.cols;
-	rows = img.rows;
-	/*cv::cvtColor(img, img, cv::COLOR_RGBA2BGR);
+	cols = image.mat.cols;
+	rows = image.mat.rows;
+	/*cv::cvtColor(image.mat, img, cv::COLOR_RGBA2BGR);
 	cv::imshow("momo", img);
 	cv::cvtColor(img, img, cv::COLOR_BGR2RGBA);*/
 
