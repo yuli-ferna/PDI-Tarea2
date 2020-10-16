@@ -16,7 +16,7 @@ class Application
 	unsigned int texture;
 	unsigned int cols, rows;
 	cv::Vec2d mouse;
-	cv::Mat img;
+	cv::Mat img,img2;
 	Image image;
 public:
 	Application();
@@ -31,6 +31,8 @@ public:
 	void CreateTexture();
 
 	void processKeyboardInput(GLFWwindow*);
+
+	void whellEvent( double, double);
 
 	static void HelpMarker(const char* desc);
 

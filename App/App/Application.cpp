@@ -1,7 +1,5 @@
 #include "Application.h"
 
-void callBackMouseWhell(GLFWwindow* , double , double );
-
 Application::Application() {
 
 	// Setup window
@@ -61,11 +59,11 @@ Application::Application() {
 	//ImGui::StyleColorsDark();
 	ImGui::StyleColorsClassic();
 
+	//glfwSetScrollCallback(window, callBackMouseWhell);
+
 	// Setup Platform/Renderer bindings
 	ImGui_ImplGlfw_InitForOpenGL(window, true);
 	ImGui_ImplOpenGL3_Init(glsl_version);
-
-	glfwSetScrollCallback(window, callBackMouseWhell);
 
 	Init();
 }
@@ -253,12 +251,35 @@ void Application::processKeyboardInput(GLFWwindow* window) {
 		// Tells glfw to close the window as soon as possible
 		glfwSetWindowShouldClose(window, true);
 	}
+	if (glfwGetKey(window, GLFW_KEY_0) == GLFW_PRESS) {
 
+		Application::whellEvent(0,1);
+	}
+	if(glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS) {
+
+		Application::whellEvent(0,-1);
+
+	}
 }
 
-void callBackMouseWhell(GLFWwindow* window, double dx, double dy)
+void Application::whellEvent(double dx, double dy)
 {
 
 	std::cout << dx << " "<< dy << " "<<std::endl;
+
+	if (dy > 0) {
+
+		cv::resize(image.mat, img2,cv::Size(),2,2);
+		image.mat = img2;
+		CreateTexture();
+	}
+
+	else if (dy < 0){
+
+		cv::resize(image.mat, img2, cv::Size(), 0.5, 0.5);
+		image.mat = img2;
+		CreateTexture();
+
+	}
 
 }
