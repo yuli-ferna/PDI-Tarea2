@@ -85,7 +85,8 @@ Application::~Application() {
 
 
 void Application::MainLoop()
-{
+{	
+	zoom = 1.0;
 	std::string path = "../momo.jpg";
 	image = Image(path);
 	CreateTexture();
@@ -113,8 +114,8 @@ void Application::MainLoop()
 		
 		// Your code here
 
-		if (show_demo_window)
-			ImGui::ShowDemoWindow(&show_demo_window);
+		//if (show_demo_window)
+			//ImGui::ShowDemoWindow(&show_demo_window);
 
 		// ImGui
 		UI();
@@ -226,6 +227,7 @@ void Application::HelpMarker(const char* desc)
 		ImGui::PopTextWrapPos();
 		ImGui::EndTooltip();
 	}
+
 }
 
 void Application::CreateTexture() {
@@ -236,10 +238,10 @@ void Application::CreateTexture() {
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	//glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, image.mat.cols, image.mat.rows, 0, GL_BGR, GL_UNSIGNED_BYTE, image.mat.data);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, image.drawImg.cols, image.drawImg.rows, 0, GL_BGR, GL_UNSIGNED_BYTE, image.drawImg.data);
 
-	cols = image.mat.cols;
-	rows = image.mat.rows;
+	cols = image.drawImg.cols;
+	rows = image.drawImg.rows;
 
 }
 
@@ -251,33 +253,37 @@ void Application::processKeyboardInput(GLFWwindow* window) {
 		// Tells glfw to close the window as soon as possible
 		glfwSetWindowShouldClose(window, true);
 	}
+
 	if (glfwGetKey(window, GLFW_KEY_0) == GLFW_PRESS) {
 
-		Application::whellEvent(0,1);
+		zoom += 0.05;
+		Application::whellEvent(1, zoom);
 	}
+
 	if(glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS) {
 
-		Application::whellEvent(0,-1);
+		if (zoom > 0.05) {
+
+			zoom += -0.05;
+
+		}
+		Application::whellEvent(-1, zoom);
 
 	}
 }
 
-void Application::whellEvent(double dx, double dy)
+void Application::whellEvent(int dx, float zoom)
 {
 
-	std::cout << dx << " "<< dy << " "<<std::endl;
+	if (dx > 0) {
 
-	if (dy > 0) {
-
-		cv::resize(image.mat, img2,cv::Size(),2,2);
-		image.mat = img2;
+		cv::resize(image.cImg, image.drawImg,cv::Size(), zoom, zoom);
 		CreateTexture();
 	}
 
-	else if (dy < 0){
+	else if (dx < 0){
 
-		cv::resize(image.mat, img2, cv::Size(), 0.5, 0.5);
-		image.mat = img2;
+		cv::resize(image.cImg, image.drawImg, cv::Size(), zoom, zoom);
 		CreateTexture();
 
 	}

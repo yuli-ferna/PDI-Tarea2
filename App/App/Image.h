@@ -6,7 +6,7 @@
 class Image
 {
 public:
-	cv::Mat mat;
+	cv::Mat oImg,cImg,drawImg;
 
 	Image(std::string path = "");
 	~Image();

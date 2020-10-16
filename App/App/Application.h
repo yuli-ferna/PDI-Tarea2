@@ -17,7 +17,9 @@ class Application
 	unsigned int cols, rows;
 	cv::Vec2d mouse;
 	cv::Mat img,img2;
+	float zoom;
 	Image image;
+
 public:
 	Application();
 	~Application();
@@ -32,7 +34,7 @@ public:
 
 	void processKeyboardInput(GLFWwindow*);
 
-	void whellEvent( double, double);
+	void whellEvent(int, float);
 
 	static void HelpMarker(const char* desc);
 
