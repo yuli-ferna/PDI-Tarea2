@@ -15,6 +15,7 @@ class Application
 	int lowThreshold = 7, highThreshold = 50;
 	unsigned int texture;
 	unsigned int cols, rows;
+	cv::Vec2d mouse;
 	cv::Mat img;
 	Image image;
 public:
@@ -27,7 +28,10 @@ public:
 	void ImGui();
 	void ImageVisor();
 	void Init();
-	
+	void CreateTexture();
+
+	void processKeyboardInput(GLFWwindow*);
+
 	static void HelpMarker(const char* desc);
 
 };

@@ -1,5 +1,7 @@
 #include "Application.h"
 
+void callBackMouseWhell(GLFWwindow* , double , double );
+
 Application::Application() {
 
 	// Setup window
@@ -63,6 +65,8 @@ Application::Application() {
 	ImGui_ImplGlfw_InitForOpenGL(window, true);
 	ImGui_ImplOpenGL3_Init(glsl_version);
 
+	glfwSetScrollCallback(window, callBackMouseWhell);
+
 	Init();
 }
 
@@ -86,6 +90,7 @@ void Application::MainLoop()
 {
 	std::string path = "../momo.jpg";
 	image = Image(path);
+	CreateTexture();
 	//img = image.mat;
 	//img = cv::imread("../momo.jpg");
 	//cv::namedWindow("momo", 1);
@@ -96,11 +101,14 @@ void Application::MainLoop()
 	while (!glfwWindowShouldClose(window))
 	{
 		glfwGetFramebufferSize(window, &windowWidth, &windowHeight);
+		processKeyboardInput(window);
+
 		glViewport(0, 0, windowWidth, windowHeight);
+
 		glClearColor(0, 0, 0, 1);
 		glClear(GL_COLOR_BUFFER_BIT);
-		glfwPollEvents();
 
+		glfwPollEvents();
 		ImGui_ImplOpenGL3_NewFrame();
 		ImGui_ImplGlfw_NewFrame();
 		ImGui::NewFrame();
@@ -141,7 +149,10 @@ void Application::ImGui()
 		if (ImGui::BeginMenu("File"))
 		{
 			//if (ImGui::MenuItem("New")) {}
-			if (ImGui::MenuItem("Open", "Ctrl+O")) {}
+			if (ImGui::MenuItem("Open", "Ctrl+O")) {
+				
+				CreateTexture();
+			}
 			if (ImGui::MenuItem("Save", "Ctrl+S")) {
 				//cv::cvtColor(img, img, cv::COLOR_RGBA2BGR);
 
@@ -193,17 +204,6 @@ void Application::ImageVisor()
 	// Or here
 	ImGui::Begin("Image");
 
-	
-	glGenTextures(1, &texture);
-	glBindTexture(GL_TEXTURE_2D, texture);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	//glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);
-	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, image.mat.cols, image.mat.rows, 0, GL_BGR, GL_UNSIGNED_BYTE, image.mat.data);
-
-	cols = image.mat.cols;
-	rows = image.mat.rows;
 	/*cv::cvtColor(image.mat, img, cv::COLOR_RGBA2BGR);
 	cv::imshow("momo", img);
 	cv::cvtColor(img, img, cv::COLOR_BGR2RGBA);*/
@@ -228,4 +228,37 @@ void Application::HelpMarker(const char* desc)
 		ImGui::PopTextWrapPos();
 		ImGui::EndTooltip();
 	}
+}
+
+void Application::CreateTexture() {
+
+	glGenTextures(1, &texture);
+	glBindTexture(GL_TEXTURE_2D, texture);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	//glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);
+	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, image.mat.cols, image.mat.rows, 0, GL_BGR, GL_UNSIGNED_BYTE, image.mat.data);
+
+	cols = image.mat.cols;
+	rows = image.mat.rows;
+
+}
+
+void Application::processKeyboardInput(GLFWwindow* window) {
+
+	// Checks if the escape key is pressed
+	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
+
+		// Tells glfw to close the window as soon as possible
+		glfwSetWindowShouldClose(window, true);
+	}
+
+}
+
+void callBackMouseWhell(GLFWwindow* window, double dx, double dy)
+{
+
+	std::cout << dx << " "<< dy << " "<<std::endl;
+
 }
