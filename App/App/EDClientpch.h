@@ -3,6 +3,8 @@
 #ifndef __ED_CLIENT_PCH__
 #define __ED_CLIENT_PCH__
 
+#include <windows.h>
+#include <commdlg.h>
 #include <imgui.h>
 //#include <imfilebrowser.h>
 
@@ -13,6 +15,8 @@
 #include "Image.h" 
 
 #include <stdio.h>
+#include <stdlib.h>
+
 #include <string>
 #include <memory>
 #include <glad/glad.h> 

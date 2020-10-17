@@ -96,7 +96,6 @@ void Application::MainLoop()
 	//image.BGR2RGBA();
 	//cv::cvtColor(img, img, cv::COLOR_BGR2RGBA);
 
-
 	while (!glfwWindowShouldClose(window))
 	{
 		glfwGetFramebufferSize(window, &windowWidth, &windowHeight);
@@ -149,17 +148,18 @@ void Application::ImGui()
 		{
 			//if (ImGui::MenuItem("New")) {}
 			if (ImGui::MenuItem("Open", "Ctrl+O")) {
-				
-				CreateTexture();
+				std::string newFile = loadPath(true);
+				if (newFile != "")
+				{
+					image = Image(newFile);
+					//image.Load();
+					CreateTexture();
+
+				}
 			}
 			if (ImGui::MenuItem("Save", "Ctrl+S")) {
-				//cv::cvtColor(img, img, cv::COLOR_RGBA2BGR);
-
-				//cv::imwrite("../out.jpg", image.mat);
-				image.Save("../out.jpg");
-
-
-				//cv::cvtColor(img, img, cv::COLOR_BGR2RGBA); 
+				
+				image.Save(loadPath(false));
 
 			}
 
@@ -288,4 +288,29 @@ void Application::whellEvent(int dx, float zoom)
 
 	}
 
+}
+
+std::string Application::loadPath(bool open)
+{
+	
+	OPENFILENAME ofn;
+	wchar_t fileName[MAX_PATH] = L"";
+	ZeroMemory(&ofn, sizeof(ofn));
+	ofn.lStructSize = sizeof(OPENFILENAME);
+	ofn.hwndOwner = NULL;
+
+	ofn.lpstrFilter = L"JPG Files(.jpg)\0*.jpg\0PNG Files(.png)\0*.png\0BMP Files(.bmp)\0*.bmp";
+
+	ofn.lpstrFile = fileName;
+	ofn.nMaxFile = MAX_PATH;
+	ofn.Flags = OFN_EXPLORER | OFN_FILEMUSTEXIST | OFN_HIDEREADONLY;
+	ofn.lpstrDefExt = L"";
+	std::string fileNameStr;
+	if ((open && GetOpenFileName(&ofn)) || (!open && GetSaveFileName(&ofn))) {
+		std::wstring wsfileName(fileName);
+		std::string str(wsfileName.begin(), wsfileName.end());
+		fileNameStr = str;
+		//std::cout << fileNameStr << std::endl;
+	}
+	return fileNameStr;
 }
