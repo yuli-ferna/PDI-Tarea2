@@ -108,8 +108,8 @@ void Application::MainLoop()
 		
 		// Your code here
 
-		//if (show_demo_window)
-			//ImGui::ShowDemoWindow(&show_demo_window);
+		if (show_demo_window)
+			ImGui::ShowDemoWindow(&show_demo_window);
 
 		// ImGui
 		UI();
@@ -173,6 +173,19 @@ void Application::ImGui()
 
 	}
 	
+	if (ImGui::CollapsingHeader("Rotation"))
+	{
+		ImGui::SliderFloat("slider angle", &image.rotation, 0.0f, 360.0f, "%.1f °");
+		//ImGui::SliderAngle("slider angle", &image.rotation);
+		if (ImGui::IsItemEdited()) {
+			std::cout << image.rotation << std::endl;
+			rotationEvent(image.rotation);
+		}
+	}
+	/*if (ImGui::Button("90°"))
+	{
+		image.rotation = 90;
+	}*/
 	//if (ImGui::Button("Show img and save"))
 	//{
 

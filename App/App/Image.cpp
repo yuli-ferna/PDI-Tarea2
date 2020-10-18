@@ -4,7 +4,7 @@ Image::Image(std::string path)
 {
 	oImg = cImg = drawImg = cv::imread(path);
 	center= cv::Point2f((cImg.cols - 1) / 2.0, (cImg.rows - 1) / 2.0);
-
+	rotation = 0;
 }
 
 Image::~Image()

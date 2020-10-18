@@ -8,6 +8,7 @@ class Image
 public:
 	cv::Mat oImg,cImg,drawImg;
 	cv::Point2f center;
+	float rotation;
 	Image(std::string path = "");
 	~Image();
 	void Load(std::string path);
