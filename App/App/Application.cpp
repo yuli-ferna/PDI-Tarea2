@@ -153,9 +153,11 @@ void Application::ImGui()
 				}
 			}
 			if (ImGui::MenuItem("Save", "Ctrl+S")) {
-				
-				image.Save(loadPath(false));
-
+				std::string newFile = loadPath(false);
+				if (newFile != "")
+				{
+					image.Save(newFile);
+				}
 			}
 
 			ImGui::EndMenu();
