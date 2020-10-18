@@ -34,7 +34,7 @@ public:
 
 	void processKeyboardInput(GLFWwindow*);
 
-	void whellEvent(int, float);
+	void zoomEvent(float);
 
 	void rotationEvent(double angle);
 

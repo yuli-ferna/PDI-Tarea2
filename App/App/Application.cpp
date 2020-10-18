@@ -172,6 +172,10 @@ void Application::ImGui()
 		ImGui::Text("size = %d x %d", cols, rows);
 
 	}
+	if(ImGui::SliderFloat("float", &zoom, 0.1f, 3.0f)){
+
+		zoomEvent(zoom);
+	}
 	
 	//if (ImGui::Button("Show img and save"))
 	//{
@@ -203,7 +207,7 @@ void Application::ImageVisor()
 	cv::cvtColor(img, img, cv::COLOR_BGR2RGBA);*/
 
 	//ImGui::Text("size = %d x %d", cols, rows);
-	ImGui::Image((void*)(intptr_t)texture, ImVec2(cols, rows));
+	ImGui::Image((void*)(intptr_t)texture, ImVec2(cols, rows),ImVec2(0.0f, 0.0f), ImVec2(1.0f, 1.0f));
 
 	ImGui::End();
 
@@ -248,40 +252,13 @@ void Application::processKeyboardInput(GLFWwindow* window) {
 		// Tells glfw to close the window as soon as possible
 		glfwSetWindowShouldClose(window, true);
 	}
-
-	if (glfwGetKey(window, GLFW_KEY_0) == GLFW_PRESS) {
-
-		zoom += 0.05;
-		Application::whellEvent(1, zoom);
-	}
-
-	if(glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS) {
-
-		if (zoom > 0.05) {
-
-			zoom += -0.05;
-
-		}
-		Application::whellEvent(-1, zoom);
-
-	}
 }
 
-void Application::whellEvent(int dx, float zoom)
+void Application::zoomEvent(float zoom)
 {
 
-	if (dx > 0) {
-
-		cv::resize(image.cImg, image.drawImg,cv::Size(), zoom, zoom);
-		CreateTexture();
-	}
-
-	else if (dx < 0){
-
-		cv::resize(image.cImg, image.drawImg, cv::Size(), zoom, zoom);
-		CreateTexture();
-
-	}
+	cv::resize(image.cImg, image.drawImg, cv::Size(), zoom, zoom);
+	CreateTexture();
 
 }
 
