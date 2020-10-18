@@ -90,11 +90,6 @@ void Application::MainLoop()
 	std::string path = "../momo.jpg";
 	image = Image(path);
 	CreateTexture();
-	//img = image.mat;
-	//img = cv::imread("../momo.jpg");
-	//cv::namedWindow("momo", 1);
-	//image.BGR2RGBA();
-	//cv::cvtColor(img, img, cv::COLOR_BGR2RGBA);
 
 	while (!glfwWindowShouldClose(window))
 	{
@@ -288,6 +283,19 @@ void Application::whellEvent(int dx, float zoom)
 
 	}
 
+}
+
+void Application::rotationEvent(double angle) {
+	
+	cv::Mat rot = cv::getRotationMatrix2D(image.center, angle, 1.0);
+	// Create bounding box
+	cv::Rect2f bbox = cv::RotatedRect(cv::Point2f(), image.cImg.size(), angle).boundingRect2f();
+	// adjust transformation matrix
+	rot.at<double>(0, 2) += bbox.width / 2.0 - image.cImg.cols / 2.0;
+	rot.at<double>(1, 2) += bbox.height / 2.0 - image.cImg.rows / 2.0;
+
+	cv::warpAffine(image.cImg, image.drawImg, rot, bbox.size());
+	CreateTexture();
 }
 
 std::string Application::loadPath(bool open)

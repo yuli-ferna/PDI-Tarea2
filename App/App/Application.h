@@ -34,15 +34,11 @@ public:
 
 	void processKeyboardInput(GLFWwindow*);
 
-	void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
-
 	void whellEvent(int, float);
 
+	void rotationEvent(double angle);
+
 	std::string loadPath(bool open);
-
-	std::string loadPath();
-
-	std::string savePath();
 
 	static void HelpMarker(const char* desc);
 

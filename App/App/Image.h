@@ -7,7 +7,7 @@ class Image
 {
 public:
 	cv::Mat oImg,cImg,drawImg;
-
+	cv::Point2f center;
 	Image(std::string path = "");
 	~Image();
 	void Load(std::string path);
