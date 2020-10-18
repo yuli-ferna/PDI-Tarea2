@@ -172,39 +172,19 @@ void Application::ImGui()
 		ImGui::Text("size = %d x %d", cols, rows);
 
 	}
-	if(ImGui::SliderFloat("float", &zoom, 0.1f, 3.0f)){
+	if(ImGui::SliderFloat("Zoom", &zoom, 0.1f, 3.0f)){
 
 		zoomEvent(zoom);
 	}
 	
-	if (ImGui::CollapsingHeader("Rotation"))
-	{
-		ImGui::SliderFloat("slider angle", &image.rotation, 0.0f, 360.0f, "%.1f °");
-		//ImGui::SliderAngle("slider angle", &image.rotation);
-		if (ImGui::IsItemEdited()) {
-			std::cout << image.rotation << std::endl;
-			rotationEvent(image.rotation);
-		}
+	
+	ImGui::SliderFloat("Rotate", &image.rotation, 0.0f, 360.0f, "%.1f ï¿½");
+	//ImGui::SliderAngle("slider angle", &image.rotation);
+	if (ImGui::IsItemEdited()) {
+		rotationEvent(image.rotation);
 	}
-	/*if (ImGui::Button("90°"))
-	{
-		image.rotation = 90;
-	}*/
-	//if (ImGui::Button("Show img and save"))
-	//{
-
-	//	if (img.empty())
-	//	{
-
-	//		std::cout << "Couldn't load image";
-	//		__debugbreak();
-	//	}
-	//	
-
-
-	//	//cv::imwrite("../out.jpg", img);
-	//}
-
+	
+	
 	
 	ImGui::End();
 
