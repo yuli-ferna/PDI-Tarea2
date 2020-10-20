@@ -89,6 +89,8 @@ void Application::MainLoop()
 	zoom = 1.0;
 	std::string path = "../momo.jpg";
 	image = Image(path);
+
+
 	CreateTexture();
 
 	while (!glfwWindowShouldClose(window))
@@ -174,9 +176,9 @@ void Application::ImGui()
 		ImGui::Text("size = %d x %d", cols, rows);
 
 	}
-	if(ImGui::SliderFloat("Zoom", &zoom, 0.1f, 3.0f)){
+	if(ImGui::SliderFloat("Zoom", &image.zoom, 0.1f, 3.0f)){
 
-		zoomEvent(zoom);
+		zoomEvent(image.zoom);
 	}
 	
 	
@@ -197,11 +199,6 @@ void Application::ImageVisor()
 	// Or here
 	ImGui::Begin("Image");
 
-	/*cv::cvtColor(image.mat, img, cv::COLOR_RGBA2BGR);
-	cv::imshow("momo", img);
-	cv::cvtColor(img, img, cv::COLOR_BGR2RGBA);*/
-
-	//ImGui::Text("size = %d x %d", cols, rows);
 	ImGui::Image((void*)(intptr_t)texture, ImVec2(cols, rows),ImVec2(0.0f, 0.0f), ImVec2(1.0f, 1.0f));
 
 	ImGui::End();
@@ -251,7 +248,6 @@ void Application::processKeyboardInput(GLFWwindow* window) {
 
 void Application::zoomEvent(float zoom)
 {
-
 	cv::resize(image.cImg, image.drawImg, cv::Size(), zoom, zoom);
 	CreateTexture();
 
