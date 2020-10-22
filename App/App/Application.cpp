@@ -89,6 +89,7 @@ void Application::MainLoop()
 	zoom = 1.0;
 	std::string path = "../momo.jpg";
 	image = Image(path);
+	pOpen = new bool;
 	CreateTexture();
 
 	while (!glfwWindowShouldClose(window))
@@ -131,7 +132,7 @@ void Application::Render()
 
 void Application::UI() {
 	ImGui();
-	ImageVisor();
+	ImageVisor(pOpen);
 }
 
 void Application::ImGui()
@@ -190,10 +191,11 @@ void Application::ImGui()
 
 }
 
-void Application::ImageVisor()
-{
+void Application::ImageVisor(bool *pOpen)
+{	
+
 	// Or here
-	ImGui::Begin("Image");
+	ImGui::Begin("Image", pOpen, ImGuiWindowFlags_AlwaysAutoResize);
 
 	/*cv::cvtColor(image.mat, img, cv::COLOR_RGBA2BGR);
 	cv::imshow("momo", img);

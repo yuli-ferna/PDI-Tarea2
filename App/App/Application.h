@@ -19,6 +19,8 @@ class Application
 	cv::Mat img,img2;
 	float zoom;
 	Image image;
+	bool* pOpen;
+	bool p_open;
 
 public:
 	Application();
@@ -28,7 +30,7 @@ public:
 	void Render();
 	void UI();
 	void ImGui();
-	void ImageVisor();
+	void ImageVisor(bool*);
 	void Init();
 	void CreateTexture();
 
