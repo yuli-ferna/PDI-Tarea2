@@ -1,5 +1,6 @@
 #include "Application.h"
 
+
 Application::Application() {
 
 	// Setup window
@@ -90,6 +91,9 @@ void Application::MainLoop()
 	std::string path = "../momo.jpg";
 	image = Image(path);
 	pOpen = new bool;
+	arr = std::vector(64, 1);
+	columns_count = 4;
+	lines_count = 1;
 	CreateTexture();
 
 	while (!glfwWindowShouldClose(window))
@@ -191,15 +195,55 @@ void Application::ImGui()
 	if (ImGui::IsItemEdited()) {
 		rotationEvent(image.rotation);
 	}
-	
-	
+	if (ImGui::CollapsingHeader("Morphology"))
+	{
+		KernellView(arr, columns_count, lines_count);
+	}
+		
 	
 	ImGui::End();
 
 }
 
+void Application::KernellView(std::vector<int> &arr, int &columns_count, int& lines_count) {
+	if (ImGui::TreeNode("Kernel"))
+	{
+		
+		ImGui::SetNextItemWidth(ImGui::GetFontSize() * 8);
+		ImGui::DragInt("##columns_count", &columns_count, 0.1f, 2, 7, "%d columns");
+		ImGui::SameLine();
+		ImGui::SetNextItemWidth(ImGui::GetFontSize() * 8);
+		ImGui::DragInt("##lines_count", &lines_count, 0.1f, 2, 7, "%d rows");
+		if (columns_count < 2)
+			columns_count = 2;
+		if (lines_count < 1)
+			lines_count = 1;
+
+		ImGui::Columns(columns_count, NULL, true);
+		for (int i = 0; i < columns_count * lines_count; i++)
+		{
+			ImGui::PushID(i);
+
+			if (ImGui::GetColumnIndex() == 0)
+				ImGui::Separator();
+			
+			ImGui::Text("%i", arr[i]);
+			ImGui::InputInt("", &arr[i]);
+			ImGui::PopID();
+
+			ImGui::NextColumn();
+		}
+		
+		ImGui::Columns(1);
+		//if (h_borders)
+		ImGui::Separator();
+		ImGui::TreePop();
+	}
+}
+
 void Application::ImageVisor(bool *pOpen)
-{	
+{
+	// Or here
 	float auxLeftPaddingX = float(leftPanningX)/image.drawImg.cols;
 	float auxLeftPaddingY = float(leftPanningY)/image.drawImg.rows;
 	float auxRightPaddingX = float(rightPanningX) / image.drawImg.cols;
@@ -207,8 +251,7 @@ void Application::ImageVisor(bool *pOpen)
 
 	int drawCols = abs(image.drawImg.cols - leftPanningX - (image.drawImg.cols - rightPanningX));
 	int drawRows = abs(image.drawImg.rows - leftPanningY - (image.drawImg.rows - rightPanningY));
-	std::cout << auxLeftPaddingX << " " << auxRightPaddingX << std::endl;
-	// Or here
+	
 	ImGui::Begin("Image", pOpen, ImGuiWindowFlags_AlwaysAutoResize);
 
 	ImGui::Image((void*)(intptr_t)texture, ImVec2(drawCols  * image.zoom, drawRows * image.zoom),ImVec2(auxLeftPaddingX, auxLeftPaddingY), ImVec2(auxRightPaddingX, auxRightPaddingY));
@@ -264,20 +307,25 @@ void Application::processKeyboardInput(GLFWwindow* window) {
 void Application::zoomEvent(float zoom)
 {
 	cv::resize(image.cImg, image.drawImg, cv::Size(), zoom, zoom);
+	
 	CreateTexture();
 
 }
 
 void Application::rotationEvent(double angle) {
 	
-	cv::Mat rot = cv::getRotationMatrix2D(image.center, angle, 1.0);
-	// Create bounding box
-	cv::Rect2f bbox = cv::RotatedRect(cv::Point2f(), image.cImg.size(), angle).boundingRect2f();
-	// adjust transformation matrix
-	rot.at<double>(0, 2) += bbox.width / 2.0 - image.cImg.cols / 2.0;
-	rot.at<double>(1, 2) += bbox.height / 2.0 - image.cImg.rows / 2.0;
+	
+	cv::resize(image.cImg, image.drawImg, cv::Size(), image.zoom, image.zoom);
+	cv::Point2f center = cv::Point2f((image.drawImg.cols - 1.0) / 2.0, (image.drawImg.rows - 1.0) / 2.0);
 
-	cv::warpAffine(image.cImg, image.drawImg, rot, bbox.size());
+	cv::Mat rot = cv::getRotationMatrix2D(center, angle, 1.0);
+	// Create bounding box
+	cv::Rect2f bbox = cv::RotatedRect(cv::Point2f(), image.drawImg.size(), angle).boundingRect2f();
+	// adjust transformation matrix
+	rot.at<double>(0, 2) += bbox.width / 2.0 - image.drawImg.cols / 2.0;
+	rot.at<double>(1, 2) += bbox.height / 2.0 - image.drawImg.rows / 2.0;
+
+	cv::warpAffine(image.drawImg, image.drawImg, rot, bbox.size());
 	CreateTexture();
 }
 
