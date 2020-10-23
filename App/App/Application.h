@@ -18,7 +18,10 @@ class Application
 	cv::Vec2d mouse;
 	cv::Mat img,img2;
 	float zoom;
+	int leftPanningX, leftPanningY, rightPanningX, rightPanningY;
 	Image image;
+	bool* pOpen;
+	bool p_open;
 
 public:
 	std::vector<int> arr;
@@ -32,7 +35,8 @@ public:
 	void UI();
 	void ImGui();
 	void KernellView(std::vector<int>& arr, int& columns_count, int& lines_count);
-	void ImageVisor();
+
+	void ImageVisor(bool *);
 	void Init();
 	void CreateTexture();
 

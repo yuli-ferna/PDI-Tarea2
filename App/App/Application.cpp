@@ -90,6 +90,7 @@ void Application::MainLoop()
 	zoom = 1.0;
 	std::string path = "../momo.jpg";
 	image = Image(path);
+	pOpen = new bool;
 	arr = std::vector(64, 1);
 	columns_count = 4;
 	lines_count = 1;
@@ -135,7 +136,7 @@ void Application::Render()
 
 void Application::UI() {
 	ImGui();
-	ImageVisor();
+	ImageVisor(pOpen);
 }
 
 void Application::ImGui()
@@ -180,10 +181,15 @@ void Application::ImGui()
 	}
 	if(ImGui::SliderFloat("Zoom", &image.zoom, 0.1f, 3.0f)){
 
-		zoomEvent(image.zoom);
+		//zoomEvent(image.zoom);
 	}
-	
-	
+
+	ImGui::SliderInt("Panning Left X", &leftPanningX, 0, image.drawImg.cols,"%d");
+	ImGui::SliderInt("Panning Left Y", &leftPanningY, 0, image.drawImg.rows,"%d");
+	ImGui::SliderInt("Panning Right X", &rightPanningX, 0, image.drawImg.cols, "%d");
+	ImGui::SliderInt("Panning Right Y", &rightPanningY, 0, image.drawImg.rows, "%d");
+
+
 	ImGui::SliderFloat("Rotate", &image.rotation, 0.0f, 360.0f, "%.1f �");
 	//ImGui::SliderAngle("slider angle", &image.rotation);
 	if (ImGui::IsItemEdited()) {
@@ -235,12 +241,20 @@ void Application::KernellView(std::vector<int> &arr, int &columns_count, int& li
 	}
 }
 
-void Application::ImageVisor()
+void Application::ImageVisor(bool *pOpen)
 {
 	// Or here
-	ImGui::Begin("Image");
+	float auxLeftPaddingX = float(leftPanningX)/image.drawImg.cols;
+	float auxLeftPaddingY = float(leftPanningY)/image.drawImg.rows;
+	float auxRightPaddingX = float(rightPanningX) / image.drawImg.cols;
+	float auxRightPaddingY = float(rightPanningY) / image.drawImg.rows;
 
-	ImGui::Image((void*)(intptr_t)texture, ImVec2(cols, rows),ImVec2(0.0f, 0.0f), ImVec2(1.0f, 1.0f));
+	int drawCols = abs(image.drawImg.cols - leftPanningX - (image.drawImg.cols - rightPanningX));
+	int drawRows = abs(image.drawImg.rows - leftPanningY - (image.drawImg.rows - rightPanningY));
+	
+	ImGui::Begin("Image", pOpen, ImGuiWindowFlags_AlwaysAutoResize);
+
+	ImGui::Image((void*)(intptr_t)texture, ImVec2(drawCols  * image.zoom, drawRows * image.zoom),ImVec2(auxLeftPaddingX, auxLeftPaddingY), ImVec2(auxRightPaddingX, auxRightPaddingY));
 
 	ImGui::End();
 
@@ -274,6 +288,9 @@ void Application::CreateTexture() {
 
 	cols = image.drawImg.cols;
 	rows = image.drawImg.rows;
+	leftPanningX = leftPanningY = 0;
+	rightPanningX = image.drawImg.cols;
+	rightPanningY = image.drawImg.rows;
 
 }
 
