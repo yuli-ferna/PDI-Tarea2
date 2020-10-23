@@ -21,6 +21,9 @@ class Application
 	Image image;
 
 public:
+	std::vector<int> arr;
+	int columns_count;
+	int lines_count;
 	Application();
 	~Application();
 	
@@ -28,6 +31,9 @@ public:
 	void Render();
 	void UI();
 	void ImGui();
+	void KernellView(std::vector<int>& arr, int& columns_count, int& lines_count);
+	void KernellView(std::vector<int> &arr);
+	void KernellView();
 	void ImageVisor();
 	void Init();
 	void CreateTexture();
