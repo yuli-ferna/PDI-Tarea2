@@ -177,10 +177,15 @@ void Application::ImGui()
 	}
 	if(ImGui::SliderFloat("Zoom", &image.zoom, 0.1f, 3.0f)){
 
-		zoomEvent(image.zoom);
+		//zoomEvent(image.zoom);
 	}
-	
-	
+
+	ImGui::SliderInt("Panning Left X", &leftPanningX, 0, image.drawImg.cols,"%d");
+	ImGui::SliderInt("Panning Left Y", &leftPanningY, 0, image.drawImg.rows,"%d");
+	ImGui::SliderInt("Panning Right X", &rightPanningX, 0, image.drawImg.cols, "%d");
+	ImGui::SliderInt("Panning Right Y", &rightPanningY, 0, image.drawImg.rows, "%d");
+
+
 	ImGui::SliderFloat("Rotate", &image.rotation, 0.0f, 360.0f, "%.1f �");
 	//ImGui::SliderAngle("slider angle", &image.rotation);
 	if (ImGui::IsItemEdited()) {
@@ -195,11 +200,18 @@ void Application::ImGui()
 
 void Application::ImageVisor(bool *pOpen)
 {	
+	float auxLeftPaddingX = float(leftPanningX)/image.drawImg.cols;
+	float auxLeftPaddingY = float(leftPanningY)/image.drawImg.rows;
+	float auxRightPaddingX = float(rightPanningX) / image.drawImg.cols;
+	float auxRightPaddingY = float(rightPanningY) / image.drawImg.rows;
 
+	int drawCols = abs(image.drawImg.cols - leftPanningX - (image.drawImg.cols - rightPanningX));
+	int drawRows = abs(image.drawImg.rows - leftPanningY - (image.drawImg.rows - rightPanningY));
+	std::cout << auxLeftPaddingX << " " << auxRightPaddingX << std::endl;
 	// Or here
 	ImGui::Begin("Image", pOpen, ImGuiWindowFlags_AlwaysAutoResize);
 
-	ImGui::Image((void*)(intptr_t)texture, ImVec2(cols, rows),ImVec2(0.0f, 0.0f), ImVec2(1.0f, 1.0f));
+	ImGui::Image((void*)(intptr_t)texture, ImVec2(drawCols  * image.zoom, drawRows * image.zoom),ImVec2(auxLeftPaddingX, auxLeftPaddingY), ImVec2(auxRightPaddingX, auxRightPaddingY));
 
 	ImGui::End();
 
@@ -233,6 +245,9 @@ void Application::CreateTexture() {
 
 	cols = image.drawImg.cols;
 	rows = image.drawImg.rows;
+	leftPanningX = leftPanningY = 0;
+	rightPanningX = image.drawImg.cols;
+	rightPanningY = image.drawImg.rows;
 
 }
 

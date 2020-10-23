@@ -18,6 +18,7 @@ class Application
 	cv::Vec2d mouse;
 	cv::Mat img,img2;
 	float zoom;
+	int leftPanningX, leftPanningY, rightPanningX, rightPanningY;
 	Image image;
 	bool* pOpen;
 	bool p_open;
