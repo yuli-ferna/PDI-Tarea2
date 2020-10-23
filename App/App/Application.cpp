@@ -287,6 +287,19 @@ void Application::processKeyboardInput(GLFWwindow* window) {
 	}
 }
 
+void Application::erode() {
+	int erosion_type = 0;
+	int erosion_elem = 0;
+	int erosion_size = 4;
+	if (erosion_elem == 0) { erosion_type = cv::MorphShapes::MORPH_RECT; }
+	else if (erosion_elem == 1) { erosion_type = cv::MorphShapes::MORPH_CROSS; }
+	else if (erosion_elem == 2) { erosion_type = cv::MorphShapes::MORPH_ELLIPSE; }
+	cv::Mat element = cv::getStructuringElement(erosion_type,
+		cv::Size(2 * erosion_size + 1, 2 * erosion_size + 1),
+		cv::Point(erosion_size, erosion_size));
+	cv::erode(image.cImg, image.drawImg, element);
+}
+
 void Application::zoomEvent(float zoom)
 {
 	cv::resize(image.cImg, image.drawImg, cv::Size(), zoom, zoom);

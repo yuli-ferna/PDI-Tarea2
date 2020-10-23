@@ -32,13 +32,13 @@ public:
 	void UI();
 	void ImGui();
 	void KernellView(std::vector<int>& arr, int& columns_count, int& lines_count);
-	void KernellView(std::vector<int> &arr);
-	void KernellView();
 	void ImageVisor();
 	void Init();
 	void CreateTexture();
 
 	void processKeyboardInput(GLFWwindow*);
+
+	void erode();
 
 	void zoomEvent(float);
 
