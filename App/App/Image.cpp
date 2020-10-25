@@ -27,9 +27,12 @@ void Image::Undo()
 	if (history.size())
 	{
 		historyUndo.push_back(history.back());
+		cImg = history.back();
+		drawImg = history.back();
 		history.pop_back();
 
 		// execute event
+
 	}
 }
 
@@ -38,34 +41,26 @@ void Image::Redo()
 	if (historyUndo.size())
 	{
 		history.push_back(historyUndo.back());
+		cImg = historyUndo.back();
+		drawImg = historyUndo.back();
 		historyUndo.pop_back();
 
 		// execute event
 	}
 }
 
-
-void Image::addHistory(std::string instruction)
+void Image::addHistory(cv::Mat instruction)
 {
 
 	history.push_back(instruction);
-	if (historyUndo.size()) {
+	cImg = instruction;
+	drawImg = instruction;
+	if (historyUndo.size()) 
+	{
 		historyUndo.clear();
 	}
 	if (history.size() > 5)
 	{
 		history.pop_front();
 	}
-}
-
-void Image::printHistory() {
-	std::cout << "history" << std::endl;
-	for (std::list<std::string>::iterator it1 = history.begin(); it1 != history.end(); ++it1)
-		std::cout << ' ' << *it1;
-	std::cout << '\n';
-	std::cout << "historyUndo" << std::endl;
-	for (std::list<std::string>::iterator it1 = historyUndo.begin(); it1 != historyUndo.end(); ++it1)
-		std::cout << ' ' << *it1;
-	std::cout << '\n';
-
 }
