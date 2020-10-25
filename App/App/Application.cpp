@@ -200,29 +200,62 @@ void Application::ImGui()
 		ImGui::Text("size = %d x %d", cols, rows);
 		
 	}
+
+	MorphologySection();
 	
+	ImGui::End();
+}
+
+void Application::MorphologySection() {
 	if (ImGui::CollapsingHeader("Morphology"))
 	{
 		ImGui::Text("Actions:");
 
 		if (ImGui::Button("Erode")) {
-			//erode();
 			event.erode();
 			CreateTexture();
 		}
+		ImGui::SameLine();
+		if (ImGui::Button("Dilate")) {
+			event.dilate();
+			CreateTexture();
+		}
+		ImGui::SameLine();
+		if (ImGui::Button("Open")) {
+			event.morphOpen();
+			CreateTexture();
+		}
+		ImGui::SameLine();
+		if (ImGui::Button("Close")) {
+			event.morphClose();
+			CreateTexture();
+		}
 
-		ImGui::Text("Structuring Element:");
+
+		ImGui::Text("Structuring Element Type:");
 		ImGui::RadioButton("MORPH_RECT", &event.structElem, 0); ImGui::SameLine();
-		ImGui::RadioButton("MORPH_CROSS", &event.structElem, 1); 
+		ImGui::RadioButton("MORPH_CROSS", &event.structElem, 1);
 		ImGui::RadioButton("MORPH_ELLIPSE", &event.structElem, 2); ImGui::SameLine();
 		ImGui::RadioButton("Arbitrary kernel", &event.structElem, 3);
-		//Arbitrary
-		KernellView(event.kernel, event.col, event.row);
+		ImGui::Separator();
+		if (event.structElem == 3)
+		{
+			KernellView(event.kernel, event.col, event.row);
+		} else {
+			ImGui::Text("Kernel size(2n + 1):"); ImGui::SameLine();
+			ImGui::SetNextItemWidth(ImGui::GetFontSize() * 8);
+			if (ImGui::InputInt("", &event.structElemSize)) {
+				if (event.structElemSize < 1)
+				{
+					event.structElemSize = 1;
+				}
+			}
+		}
 	}
-	ImGui::End();
 }
 
 void Application::KernellView(std::vector<int> &arr, int &columns_count, int& lines_count) {
+	ImGui::SetNextItemOpen(true);
 	if (ImGui::TreeNode("Kernel"))
 	{
 		
@@ -244,7 +277,7 @@ void Application::KernellView(std::vector<int> &arr, int &columns_count, int& li
 			if (ImGui::GetColumnIndex() == 0)
 				ImGui::Separator();
 			
-			ImGui::Text("%i", arr[i]);
+			//ImGui::Text("%i", arr[i]);
 			ImGui::InputInt("", &arr[i]);
 			ImGui::PopID();
 
