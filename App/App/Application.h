@@ -1,4 +1,5 @@
 #include "EDClientpch.h"
+#include "Event.h"
 
 #include <opencv2/core/core.hpp>
 
@@ -20,6 +21,7 @@ class Application
 	float zoom;
 	int leftPanningX, leftPanningY, rightPanningX, rightPanningY;
 	Image image;
+	Event event;
 	bool* pOpen;
 	bool p_open;
 

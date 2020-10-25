@@ -29,7 +29,7 @@ Application::Application() {
 #endif
 
 	// Create window with graphics context
-	window = glfwCreateWindow(800, 600, "Dear ImGui GLFW+OpenGL3 example", NULL, NULL);
+	window = glfwCreateWindow(1800, 900, "Dear ImGui GLFW+OpenGL3 example", NULL, NULL);
 	if (window == NULL) {
 		__debugbreak();
 		return;
@@ -90,10 +90,10 @@ void Application::MainLoop()
 	zoom = 1.0;
 	std::string path = "../momo.jpg";
 	image = Image(path);
+	event = Event();
+	event.setImage(image);
 	pOpen = new bool;
-	arr = std::vector(64, 1);
-	columns_count = 4;
-	lines_count = 1;
+	
 	CreateTexture();
 
 	while (!glfwWindowShouldClose(window))
@@ -174,11 +174,10 @@ void Application::ImGui()
 
 	// Or here
 	ImGui::Begin("Editor");
-	if (ImGui::CollapsingHeader("Info"))
-	{
-		ImGui::Text("size = %d x %d", cols, rows);
+	/*if (ImGui::ImageButton(my_tex_id, ImVec2(32, 32), ImVec2(0, 0), ImVec2(32.0f / my_tex_w, 32 / my_tex_h), frame_padding, ImVec4(0.0f, 0.0f, 0.0f, 1.0f))) {
 
-	}
+	}*/
+
 	if(ImGui::SliderFloat("Zoom", &image.zoom, 0.1f, 3.0f)){
 
 		//zoomEvent(image.zoom);
@@ -189,20 +188,38 @@ void Application::ImGui()
 	ImGui::SliderInt("Panning Right X", &rightPanningX, 0, image.drawImg.cols, "%d");
 	ImGui::SliderInt("Panning Right Y", &rightPanningY, 0, image.drawImg.rows, "%d");
 
-
+	
 	ImGui::SliderFloat("Rotate", &image.rotation, 0.0f, 360.0f, "%.1f �");
 	//ImGui::SliderAngle("slider angle", &image.rotation);
 	if (ImGui::IsItemEdited()) {
 		rotationEvent(image.rotation);
 	}
+
+	if (ImGui::CollapsingHeader("Info"))
+	{
+		ImGui::Text("size = %d x %d", cols, rows);
+		
+	}
+	
 	if (ImGui::CollapsingHeader("Morphology"))
 	{
-		KernellView(arr, columns_count, lines_count);
-	}
-		
-	
-	ImGui::End();
+		ImGui::Text("Actions:");
 
+		if (ImGui::Button("Erode")) {
+			//erode();
+			event.erode();
+			CreateTexture();
+		}
+
+		ImGui::Text("Structuring Element:");
+		ImGui::RadioButton("MORPH_RECT", &event.structElem, 0); ImGui::SameLine();
+		ImGui::RadioButton("MORPH_CROSS", &event.structElem, 1); 
+		ImGui::RadioButton("MORPH_ELLIPSE", &event.structElem, 2); ImGui::SameLine();
+		ImGui::RadioButton("Arbitrary kernel", &event.structElem, 3);
+		//Arbitrary
+		KernellView(event.kernel, event.col, event.row);
+	}
+	ImGui::End();
 }
 
 void Application::KernellView(std::vector<int> &arr, int &columns_count, int& lines_count) {
@@ -254,7 +271,24 @@ void Application::ImageVisor(bool *pOpen)
 	
 	ImGui::Begin("Image", pOpen, ImGuiWindowFlags_AlwaysAutoResize);
 
-	ImGui::Image((void*)(intptr_t)texture, ImVec2(drawCols  * image.zoom, drawRows * image.zoom),ImVec2(auxLeftPaddingX, auxLeftPaddingY), ImVec2(auxRightPaddingX, auxRightPaddingY));
+	if (ImGui::ArrowButton("##left", ImGuiDir_Left)) { 
+		image.Undo();
+	}
+	
+	//ImGui::PushStyleVar(ImGuiStyleVar_Alpha, ImGui::GetStyle().Alpha * 0.5f);
+	//float spacing = ImGui::GetStyle().ItemInnerSpacing.x;
+
+	ImGui::SameLine();
+	if (ImGui::ArrowButton("##right", ImGuiDir_Right)) { 
+		image.Redo();
+	}
+	
+	//ImGui::PushStyleVar(ImGuiStyleVar_Alpha, ImGui::GetStyle().Alpha * 0.5f);
+	ImGui::Separator();
+
+	ImGui::Image((void*)(intptr_t)texture, ImVec2(drawCols  * image.zoom, drawRows * image.zoom),
+		ImVec2(auxLeftPaddingX, auxLeftPaddingY), 
+		ImVec2(auxRightPaddingX, auxRightPaddingY));
 
 	ImGui::End();
 
@@ -304,18 +338,6 @@ void Application::processKeyboardInput(GLFWwindow* window) {
 	}
 }
 
-void Application::erode() {
-	int erosion_type = 0;
-	int erosion_elem = 0;
-	int erosion_size = 4;
-	if (erosion_elem == 0) { erosion_type = cv::MorphShapes::MORPH_RECT; }
-	else if (erosion_elem == 1) { erosion_type = cv::MorphShapes::MORPH_CROSS; }
-	else if (erosion_elem == 2) { erosion_type = cv::MorphShapes::MORPH_ELLIPSE; }
-	cv::Mat element = cv::getStructuringElement(erosion_type,
-		cv::Size(2 * erosion_size + 1, 2 * erosion_size + 1),
-		cv::Point(erosion_size, erosion_size));
-	cv::erode(image.cImg, image.drawImg, element);
-}
 
 void Application::zoomEvent(float zoom)
 {
@@ -328,17 +350,17 @@ void Application::zoomEvent(float zoom)
 void Application::rotationEvent(double angle) {
 	
 	
-	cv::resize(image.cImg, image.drawImg, cv::Size(), image.zoom, image.zoom);
-	cv::Point2f center = cv::Point2f((image.drawImg.cols - 1.0) / 2.0, (image.drawImg.rows - 1.0) / 2.0);
+	//cv::resize(image.cImg, image.drawImg, cv::Size(), image.zoom, image.zoom);
+	cv::Point2f center = cv::Point2f((image.cImg.cols - 1.0) / 2.0, (image.cImg.rows - 1.0) / 2.0);
 
 	cv::Mat rot = cv::getRotationMatrix2D(center, angle, 1.0);
 	// Create bounding box
-	cv::Rect2f bbox = cv::RotatedRect(cv::Point2f(), image.drawImg.size(), angle).boundingRect2f();
+	cv::Rect2f bbox = cv::RotatedRect(cv::Point2f(), image.cImg.size(), angle).boundingRect2f();
 	// adjust transformation matrix
-	rot.at<double>(0, 2) += bbox.width / 2.0 - image.drawImg.cols / 2.0;
-	rot.at<double>(1, 2) += bbox.height / 2.0 - image.drawImg.rows / 2.0;
+	rot.at<double>(0, 2) += bbox.width / 2.0 - image.cImg.cols / 2.0;
+	rot.at<double>(1, 2) += bbox.height / 2.0 - image.cImg.rows / 2.0;
 
-	cv::warpAffine(image.drawImg, image.drawImg, rot, bbox.size());
+	cv::warpAffine(image.cImg, image.drawImg, rot, bbox.size());
 	CreateTexture();
 }
 
