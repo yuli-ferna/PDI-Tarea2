@@ -293,7 +293,8 @@ void Application::KernellView(std::vector<int> &arr, int &columns_count, int& li
 
 void Application::ImageVisor(bool *pOpen)
 {
-	// Or here
+	
+
 	float auxLeftPaddingX = float(leftPanningX)/image.drawImg.cols;
 	float auxLeftPaddingY = float(leftPanningY)/image.drawImg.rows;
 	float auxRightPaddingX = float(rightPanningX) / image.drawImg.cols;
@@ -319,9 +320,17 @@ void Application::ImageVisor(bool *pOpen)
 	//ImGui::PushStyleVar(ImGuiStyleVar_Alpha, ImGui::GetStyle().Alpha * 0.5f);
 	ImGui::Separator();
 
-	ImGui::Image((void*)(intptr_t)texture, ImVec2(drawCols  * image.zoom, drawRows * image.zoom),
-		ImVec2(auxLeftPaddingX, auxLeftPaddingY), 
-		ImVec2(auxRightPaddingX, auxRightPaddingY));
+	//ImGui::Image((void*)(intptr_t)texture, ImVec2(drawCols  * image.zoom, drawRows * image.zoom),ImVec2(auxLeftPaddingX, auxLeftPaddingY), ImVec2(auxRightPaddingX, auxRightPaddingY));
+	
+
+	// Or here
+	static ImVec2 size(drawCols, drawRows), offset(100, 100);
+	ImVec2 pos = ImGui::GetCursorScreenPos();
+	ImVec4 clip_rect(pos.x, pos.y, pos.x + size.x, pos.y + size.y);
+	ImGui::InvisibleButton("##dummy", size);
+	if (ImGui::IsItemActive() && ImGui::IsMouseDragging(0)) { offset.x += ImGui::GetIO().MouseDelta.x; offset.y += ImGui::GetIO().MouseDelta.y; }
+	ImGui::GetWindowDrawList()->AddRectFilled(pos, ImVec2(pos.x + size.x, pos.y + size.y), IM_COL32(120, 120, 120, 255));
+	ImGui::GetWindowDrawList()->AddImage((void*)(intptr_t)texture, ImVec2(pos.x + offset.x, pos.y + offset.y), ImVec2(pos.x + offset.x + drawCols, pos.y + offset.y+ drawRows));
 
 	ImGui::End();
 
