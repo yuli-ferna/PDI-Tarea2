@@ -16,7 +16,7 @@ public:
 	std::vector<int> kernel;
 	Event();
 	~Event();
-	void setImage(Image);
+	void setImage(Image &);
 	cv::Mat getKernel();
 	cv::Mat getMorphMat();
 	void erode();

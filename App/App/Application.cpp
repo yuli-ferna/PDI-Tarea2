@@ -213,21 +213,25 @@ void Application::MorphologySection() {
 
 		if (ImGui::Button("Erode")) {
 			event.erode();
+			image.addHistory(image.drawImg);
 			CreateTexture();
 		}
 		ImGui::SameLine();
 		if (ImGui::Button("Dilate")) {
 			event.dilate();
+			image.addHistory(image.drawImg);
 			CreateTexture();
 		}
 		ImGui::SameLine();
 		if (ImGui::Button("Open")) {
 			event.morphOpen();
+			image.addHistory(image.drawImg);
 			CreateTexture();
 		}
 		ImGui::SameLine();
 		if (ImGui::Button("Close")) {
 			event.morphClose();
+			image.addHistory(image.drawImg);
 			CreateTexture();
 		}
 
@@ -307,6 +311,8 @@ void Application::ImageVisor(bool *pOpen)
 
 	if (ImGui::ArrowButton("##left", ImGuiDir_Left)) { 
 		image.Undo();
+		CreateTexture();
+
 	}
 	
 	//ImGui::PushStyleVar(ImGuiStyleVar_Alpha, ImGui::GetStyle().Alpha * 0.5f);
@@ -315,6 +321,8 @@ void Application::ImageVisor(bool *pOpen)
 	ImGui::SameLine();
 	if (ImGui::ArrowButton("##right", ImGuiDir_Right)) { 
 		image.Redo();
+		CreateTexture();
+
 	}
 	
 	//ImGui::PushStyleVar(ImGuiStyleVar_Alpha, ImGui::GetStyle().Alpha * 0.5f);
@@ -353,7 +361,8 @@ void Application::HelpMarker(const char* desc)
 }
 
 void Application::CreateTexture() {
-
+	glDeleteTextures(1, &texture);
+	
 	glGenTextures(1, &texture);
 	glBindTexture(GL_TEXTURE_2D, texture);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);

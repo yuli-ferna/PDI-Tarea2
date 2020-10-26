@@ -45,8 +45,6 @@ public:
 
 	void processKeyboardInput(GLFWwindow*);
 
-	void erode();
-
 	void zoomEvent(float);
 
 	void rotationEvent(double angle);
