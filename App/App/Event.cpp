@@ -13,11 +13,6 @@ Event::~Event()
 {
 }
 
-void Event::setImage(Image &i)
-{
-	image = i;
-}
-
 cv::Mat Event::getKernel() {
 	return cv::Mat(row, col, CV_32FC1, kernel.data());
 }
@@ -41,26 +36,26 @@ cv::Mat Event::getMorphMat() {
 	return element;
 }
 
-void Event::erode()
+void Event::erode(Image& image)
 {
 	cv::erode(image.drawImg, image.drawImg, getMorphMat());
-	//image.addHistory(image.drawImg);
+	image.addHistory(image.drawImg);
 }
 
-void Event::dilate()
+void Event::dilate(Image& image)
 {
 	cv::dilate(image.drawImg, image.drawImg, getMorphMat());
-	//image.addHistory(image.drawImg);
+	image.addHistory(image.drawImg);
 }
 
-void Event::morphOpen()
+void Event::morphOpen(Image& image)
 {
 	morphologyEx(image.drawImg, image.drawImg, cv::MORPH_OPEN, getMorphMat());
-	//image.addHistory(image.drawImg);
+	image.addHistory(image.drawImg);
 }
 
-void Event::morphClose() 
+void Event::morphClose(Image& image)
 {
 	morphologyEx(image.drawImg, image.drawImg, cv::MORPH_CLOSE, getMorphMat());
-	//image.addHistory(image.drawImg);
+	image.addHistory(image.drawImg);
 }

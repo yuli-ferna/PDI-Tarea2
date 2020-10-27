@@ -91,7 +91,6 @@ void Application::MainLoop()
 	std::string path = "../momo.jpg";
 	image = Image(path);
 	event = Event();
-	event.setImage(image);
 	pOpen = new bool;
 	
 	CreateTexture();
@@ -212,26 +211,22 @@ void Application::MorphologySection() {
 		ImGui::Text("Actions:");
 
 		if (ImGui::Button("Erode")) {
-			event.erode();
-			image.addHistory(image.drawImg);
+			event.erode(image);
 			CreateTexture();
 		}
 		ImGui::SameLine();
 		if (ImGui::Button("Dilate")) {
-			event.dilate();
-			image.addHistory(image.drawImg);
+			event.dilate(image);
 			CreateTexture();
 		}
 		ImGui::SameLine();
 		if (ImGui::Button("Open")) {
-			event.morphOpen();
-			image.addHistory(image.drawImg);
+			event.morphOpen(image);
 			CreateTexture();
 		}
 		ImGui::SameLine();
 		if (ImGui::Button("Close")) {
-			event.morphClose();
-			image.addHistory(image.drawImg);
+			event.morphClose(image);
 			CreateTexture();
 		}
 

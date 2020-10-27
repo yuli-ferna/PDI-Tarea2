@@ -6,7 +6,7 @@
 
 class Event
 {
-	Image image;
+	//Image image;
 	
 public:
 	int row;
@@ -16,11 +16,10 @@ public:
 	std::vector<int> kernel;
 	Event();
 	~Event();
-	void setImage(Image &);
 	cv::Mat getKernel();
 	cv::Mat getMorphMat();
-	void erode();
-	void dilate();
-	void morphOpen();
-	void morphClose();
+	void erode(Image &);
+	void dilate(Image &);
+	void morphOpen(Image &);
+	void morphClose(Image &);
 };
