@@ -4,7 +4,7 @@ Event::Event()
 {
 	row = 3;
 	col = 3;
-	kernel = std::vector(64, 1);
+	kernel = std::vector<int>(64, 1);
 	structElem = 0;
 	structElemSize = 1;
 }
@@ -14,7 +14,13 @@ Event::~Event()
 }
 
 cv::Mat Event::getKernel() {
-	return cv::Mat(row, col, CV_32FC1, kernel.data());
+
+	std::vector<int> subKernel;
+	int MatSize = row * col;
+	subKernel.insert(subKernel.begin(),  kernel.begin(), kernel.begin() + MatSize);
+	cv::Mat asd = cv::Mat(row, col, CV_32SC1, subKernel.data());
+	std::cout << asd << std::endl;
+	return cv::Mat(row, col, CV_32SC1, subKernel.data());
 }
 
 cv::Mat Event::getMorphMat() {
