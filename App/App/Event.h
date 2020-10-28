@@ -13,13 +13,18 @@ public:
 	int col;
 	int structElem;
 	int structElemSize;
+	double thresh;
+	double maxValue;
+	int typeThresh;
 	std::vector<int> kernel;
 	Event();
 	~Event();
+	void resetKernel();
 	cv::Mat getKernel();
 	cv::Mat getMorphMat();
 	void erode(Image &);
 	void dilate(Image &);
 	void morphOpen(Image &);
 	void morphClose(Image &);
+	void threshold(Image &);
 };
