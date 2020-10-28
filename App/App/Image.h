@@ -7,10 +7,12 @@ class Image
 {
 
 public:
-	cv::Mat oImg,cImg,drawImg;
+	cv::Mat oImg, cImg, drawImg;
+	cv::Mat histogramImg;
 	cv::Point2f center;
 	bool showRedo, showUndo;
 	unsigned int texture;
+	unsigned int histTexture;
 	float rotation;
 	float zoom;
 	std::vector<cv::Mat> histogram;
@@ -18,6 +20,7 @@ public:
 	std::list<cv::Mat> historyUndo;
 	Image(std::string path = "");
 	~Image();
+	void createTextureHist();
 	void Load(std::string path);
 	void Save(std::string name);
 	void Undo();

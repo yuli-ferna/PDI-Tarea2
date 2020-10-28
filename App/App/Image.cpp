@@ -8,6 +8,7 @@ Image::Image(std::string path)
 	zoom = 1.0;
 	showRedo = showUndo = false;
 	texture = -1;
+	histTexture = -1;
 	addHistory(oImg);
 	//createTexture();
 }
@@ -113,5 +114,50 @@ void Image::calHistogram()
 	int histSize = 256;
 	float range[] = { 0, 256 }; //the upper boundary is exclusive
 	const float* histRange = { range };
-	//cv::split(drawImg);
+	std::vector<cv::Mat> bgr_mat;
+	cv::split(drawImg, bgr_mat);
+	bool uniform = true, accumulate = false;
+
+	cv::Mat b_hist, g_hist, r_hist;
+	calcHist(&bgr_mat[0], 1, 0, cv::Mat(), b_hist, 1, &histSize, &histRange, true, false);
+	calcHist(&bgr_mat[1], 1, 0, cv::Mat(), g_hist, 1, &histSize, &histRange, true, false);
+	calcHist(&bgr_mat[2], 1, 0, cv::Mat(), r_hist, 1, &histSize, &histRange, true, false);
+
+	//int hist_w = 512, hist_h = 400;
+	int hist_w = 512, hist_h = 400;
+	int bin_w = cvRound((double)hist_w / histSize);
+	histogramImg = cv::Mat(hist_h, hist_w, CV_8UC3, cv::Scalar(0, 0, 0));
+
+	normalize(b_hist, b_hist, 0, histogramImg.rows, cv::NORM_MINMAX, -1, cv::Mat());
+	normalize(g_hist, g_hist, 0, histogramImg.rows, cv::NORM_MINMAX, -1, cv::Mat());
+	normalize(r_hist, r_hist, 0, histogramImg.rows, cv::NORM_MINMAX, -1, cv::Mat());
+	for (int i = 1; i < histSize; i++)
+	{
+		line(histogramImg, cv::Point(bin_w * (i - 1), hist_h - cvRound(b_hist.at<float>(i - 1))),
+			cv::Point(bin_w * (i), hist_h - cvRound(b_hist.at<float>(i))),
+			cv::Scalar(255, 0, 0), 2, 8, 0);
+		line(histogramImg, cv::Point(bin_w * (i - 1), hist_h - cvRound(g_hist.at<float>(i - 1))),
+			cv::Point(bin_w * (i), hist_h - cvRound(g_hist.at<float>(i))),
+			cv::Scalar(0, 255, 0), 2, 8, 0);
+		line(histogramImg, cv::Point(bin_w * (i - 1), hist_h - cvRound(r_hist.at<float>(i - 1))),
+			cv::Point(bin_w * (i), hist_h - cvRound(r_hist.at<float>(i))),
+			cv::Scalar(0, 0, 255), 2, 8, 0);
+	}
+
+
+	imshow("calcHist Demo", histogramImg);
+
+	if (histTexture != -1)
+	{
+		glDeleteTextures(1, &histTexture);
+	}
+
+	glGenTextures(1, &histTexture);
+	glBindTexture(GL_TEXTURE_2D, histTexture);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	//glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);
+	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, histogramImg.cols, histogramImg.rows, 0, GL_BGR, GL_UNSIGNED_BYTE, histogramImg.data);
+
 }

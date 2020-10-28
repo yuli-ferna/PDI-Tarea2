@@ -91,6 +91,8 @@ void Application::MainLoop()
 	image = Image(path);
 	event = Event();
 	image.createTexture();
+	//image.createTextureHist();
+
 	while (!glfwWindowShouldClose(window))
 	{
 		glfwGetFramebufferSize(window, &windowWidth, &windowHeight);
@@ -185,7 +187,7 @@ void Application::ImGui()
 	if (ImGui::CollapsingHeader("Info"))
 	{
 		ImGui::Text("size = %d x %d", image.drawImg.cols, image.drawImg.rows);
-		
+		Histogram();
 	}
 	if (ImGui::CollapsingHeader("Morphology"))
 	{
@@ -195,6 +197,11 @@ void Application::ImGui()
 	{
 		ThresholdSection();
 
+	}
+	if (ImGui::Button("calHistogram()"))
+	{
+		image.calHistogram();
+		//image.createTextureHist();
 	}
 	ImGui::End();
 }
@@ -276,6 +283,11 @@ void Application::MorphologySection() {
 	}
 }
 
+void Application::Histogram() {
+	//ImGui::Image((void*)(intptr_t)image.histTexture, ImVec2(362, 150));
+
+}
+
 void Application::KernellView(std::vector<int> &arr, int &columns_count, int& lines_count) {
 	ImGui::SetNextItemOpen(true);
 	if (ImGui::TreeNode("Kernel"))
@@ -321,8 +333,6 @@ void Application::ImageVisor()
 	ImGui::Begin("Image", 0, ImGuiWindowFlags_NoMove|ImGuiWindowFlags_NoCollapse|ImGuiWindowFlags_NoResize);
 	if (image.showUndo && ImGui::ArrowButton("##left", ImGuiDir_Left)) { 
 		image.Undo();
-		//CreateTexture();
-
 	}
 	
 	//ImGui::PushStyleVar(ImGuiStyleVar_Alpha, ImGui::GetStyle().Alpha * 0.5f);
@@ -332,10 +342,7 @@ void Application::ImageVisor()
 		ImGui::SameLine();
 		if (ImGui::ArrowButton("##right", ImGuiDir_Right)) {
 			image.Redo();
-			//CreateTexture();
-
 		}
-
 	}
 	
 	//ImGui::PushStyleVar(ImGuiStyleVar_Alpha, ImGui::GetStyle().Alpha * 0.5f);
