@@ -17,8 +17,7 @@ class Application
 	unsigned int cols, rows;
 	cv::Vec2d mouse;
 	cv::Mat img,img2;
-	float zoom;
-	int leftPanningX, leftPanningY, rightPanningX, rightPanningY;
+	int translateX, translateY;
 	Image image;
 	Event event;
 	bool p_open;

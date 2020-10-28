@@ -87,7 +87,6 @@ Application::~Application() {
 
 void Application::MainLoop()
 {	
-	zoom = 1.0;
 	std::string path = "../momo.jpg";
 	image = Image(path);
 	event = Event();
@@ -172,17 +171,11 @@ void Application::ImGui()
 
 	}*/
 
-	if(ImGui::SliderFloat("Zoom", &image.zoom, 0.1f, 3.0f)){
+	ImGui::SliderFloat("Zoom", &image.zoom, 0.1f, 3.0f);
 
-		//zoomEvent(image.zoom);
-	}
+	ImGui::SliderInt("Panning Left X", &translateX, -image.drawImg.cols, image.drawImg.cols,"%d");
+	ImGui::SliderInt("Panning Left Y", &translateY, -image.drawImg.rows, image.drawImg.rows,"%d");
 
-	ImGui::SliderInt("Panning Left X", &leftPanningX, 0, image.drawImg.cols,"%d");
-	ImGui::SliderInt("Panning Left Y", &leftPanningY, 0, image.drawImg.rows,"%d");
-	ImGui::SliderInt("Panning Right X", &rightPanningX, 0, image.drawImg.cols, "%d");
-	ImGui::SliderInt("Panning Right Y", &rightPanningY, 0, image.drawImg.rows, "%d");
-
-	
 	ImGui::SliderFloat("Rotate", &image.rotation, 0.0f, 360.0f, "%.1f �");
 	//ImGui::SliderAngle("slider angle", &image.rotation);
 	if (ImGui::IsItemEdited()) {
