@@ -331,12 +331,10 @@ void Application::KernellView(std::vector<int> &arr, int &columns_count, int& li
 
 void Application::ImageVisor()
 {
-
 	int drawCols = image.drawImg.cols;
 	int drawRows = image.drawImg.rows;
 
-	ImGui::Begin("Image", 0, ImGuiWindowFlags_AlwaysAutoResize|ImGuiWindowFlags_NoMove|ImGuiWindowFlags_NoCollapse);
-
+	ImGui::Begin("Image", 0, ImGuiWindowFlags_NoMove|ImGuiWindowFlags_NoCollapse|ImGuiWindowFlags_NoResize);
 	if (ImGui::ArrowButton("##left", ImGuiDir_Left)) { 
 		image.Undo();
 		CreateTexture();
@@ -355,21 +353,10 @@ void Application::ImageVisor()
 	
 	//ImGui::PushStyleVar(ImGuiStyleVar_Alpha, ImGui::GetStyle().Alpha * 0.5f);
 	ImGui::Separator();
-	
-	// Or here
-	static ImVec2 size(drawCols, drawRows), offset(0, 0);
-	ImVec2 pos = ImGui::GetCursorScreenPos();
-	ImVec4 clip_rect(pos.x, pos.y, pos.x + size.x, pos.y + size.y);
-	ImGui::InvisibleButton("##dummy", size);
-	if (ImGui::IsItemActive() && ImGui::IsMouseDragging(0)) { 
-		offset.x += ImGui::GetIO().MouseDelta.x; 
-		offset.y += ImGui::GetIO().MouseDelta.y;
-		if (offset.y <= 0.0) {
-			offset.y = 0.0;
-		}
-	}
-	
-	ImGui::GetWindowDrawList()->AddImage((void*)(intptr_t)texture, ImVec2(pos.x + offset.x, pos.y + offset.y), ImVec2(pos.x + offset.x + drawCols * zoom, pos.y + offset.y+ drawRows * zoom));
+
+	ImGui::BeginChildFrame(ImGui::GetID("Image"), ImVec2(1024, 800), ImGuiWindowFlags_HorizontalScrollbar);
+	ImGui::Image((void*)(intptr_t)texture, ImVec2(drawCols * image.zoom, drawRows * image.zoom));
+	ImGui::EndChildFrame();
 
 	ImGui::End();
 
