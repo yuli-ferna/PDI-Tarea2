@@ -40,11 +40,7 @@ public:
 
 	void ImageVisor();
 	void Init();
-	void CreateTexture();
-
 	void processKeyboardInput(GLFWwindow*);
-
-	void zoomEvent(float);
 
 	void rotationEvent(double angle);
 

@@ -13,6 +13,7 @@ public:
 	unsigned int texture;
 	float rotation;
 	float zoom;
+	std::vector<cv::Mat> histogram;
 	std::list<cv::Mat> history;
 	std::list<cv::Mat> historyUndo;
 	Image(std::string path = "");
@@ -23,6 +24,8 @@ public:
 	void Redo();
 	void createTexture();
 	void addHistory(cv::Mat);
+
+	void calHistogram();
 
 	void printHistory();
 };

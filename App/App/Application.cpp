@@ -91,9 +91,7 @@ void Application::MainLoop()
 	std::string path = "../momo.jpg";
 	image = Image(path);
 	event = Event();
-	
-	CreateTexture();
-
+	image.createTexture();
 	while (!glfwWindowShouldClose(window))
 	{
 		glfwGetFramebufferSize(window, &windowWidth, &windowHeight);
@@ -145,17 +143,15 @@ void Application::ImGui()
 		if (ImGui::BeginMenu("File"))
 		{
 			//if (ImGui::MenuItem("New")) {}
-			if (ImGui::MenuItem("Open", "Ctrl+O")) {
+			if (ImGui::MenuItem("Open", "")) {
 				std::string newFile = loadPath(true);
 				if (newFile != "")
 				{
 					image = Image(newFile);
-					//image.Load();
-					CreateTexture();
-
+					image.createTexture();
 				}
 			}
-			if (ImGui::MenuItem("Save", "Ctrl+S")) {
+			if (ImGui::MenuItem("Save", "")) {
 				std::string newFile = loadPath(false);
 				if (newFile != "")
 				{
@@ -242,7 +238,6 @@ void Application::ThresholdSection()
 	}
 	if (ImGui::Button("Apply")) {
 		event.threshold(image);
-		//CreateTexture();
 	}
 }
 
@@ -252,22 +247,18 @@ void Application::MorphologySection() {
 
 	if (ImGui::Button("Erode")) {
 		event.erode(image);
-		//CreateTexture();
 	}
 	ImGui::SameLine();
 	if (ImGui::Button("Dilate")) {
 		event.dilate(image);
-		//CreateTexture();
 	}
 	ImGui::SameLine();
 	if (ImGui::Button("Open")) {
 		event.morphOpen(image);
-		//CreateTexture();
 	}
 	ImGui::SameLine();
 	if (ImGui::Button("Close")) {
 		event.morphClose(image);
-		//CreateTexture();
 	}
 
 
@@ -381,22 +372,6 @@ void Application::HelpMarker(const char* desc)
 
 }
 
-void Application::CreateTexture() {
-	glDeleteTextures(1, &image.texture);
-	
-	glGenTextures(1, &image.texture);
-	glBindTexture(GL_TEXTURE_2D, image.texture);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	//glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);
-	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, image.drawImg.cols, image.drawImg.rows, 0, GL_BGR, GL_UNSIGNED_BYTE, image.drawImg.data);
-	//image.createTexture();
-	leftPanningX = leftPanningY = 0;
-	rightPanningX = image.drawImg.cols;
-	rightPanningY = image.drawImg.rows;
-}
-
 void Application::processKeyboardInput(GLFWwindow* window) {
 
 	// Checks if the escape key is pressed
@@ -405,15 +380,6 @@ void Application::processKeyboardInput(GLFWwindow* window) {
 		// Tells glfw to close the window as soon as possible
 		glfwSetWindowShouldClose(window, true);
 	}
-}
-
-
-void Application::zoomEvent(float zoom)
-{
-	cv::resize(image.cImg, image.drawImg, cv::Size(), zoom, zoom);
-	
-	CreateTexture();
-
 }
 
 void Application::rotationEvent(double angle) {
@@ -430,7 +396,7 @@ void Application::rotationEvent(double angle) {
 	rot.at<double>(1, 2) += bbox.height / 2.0 - image.cImg.rows / 2.0;
 
 	cv::warpAffine(image.cImg, image.drawImg, rot, bbox.size());
-	CreateTexture();
+	image.createTexture();
 }
 
 std::string Application::loadPath(bool open)

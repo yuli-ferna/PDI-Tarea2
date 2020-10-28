@@ -7,17 +7,25 @@ Image::Image(std::string path)
 	rotation = 0.0;
 	zoom = 1.0;
 	showRedo = showUndo = false;
-	//createTexture();
+	texture = -1;
 	addHistory(oImg);
+	//createTexture();
 }
 
 Image::~Image()
 {
+	if (texture != -1)
+	{
+		glDeleteTextures(1, &texture);
+	}
 }
 
 void Image::createTexture()
 {
-	glDeleteTextures(1, &texture);
+	if (texture != -1)
+	{
+		glDeleteTextures(1, &texture);
+	}
 
 	glGenTextures(1, &texture);
 	glBindTexture(GL_TEXTURE_2D, texture);
@@ -98,4 +106,12 @@ void Image::addHistory(cv::Mat instruction)
 		historyUndo.clear();
 		showRedo = false;
 	}
+}
+
+void Image::calHistogram() 
+{
+	int histSize = 256;
+	float range[] = { 0, 256 }; //the upper boundary is exclusive
+	const float* histRange = { range };
+	//cv::split(drawImg);
 }
