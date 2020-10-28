@@ -22,7 +22,6 @@ class Application
 	int leftPanningX, leftPanningY, rightPanningX, rightPanningY;
 	Image image;
 	Event event;
-	bool* pOpen;
 	bool p_open;
 
 public:
@@ -39,7 +38,7 @@ public:
 	void MorphologySection();
 	void KernellView(std::vector<int>& arr, int& columns_count, int& lines_count);
 
-	void ImageVisor(bool *);
+	void ImageVisor();
 	void Init();
 	void CreateTexture();
 

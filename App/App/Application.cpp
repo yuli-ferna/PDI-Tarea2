@@ -91,7 +91,6 @@ void Application::MainLoop()
 	std::string path = "../momo.jpg";
 	image = Image(path);
 	event = Event();
-	pOpen = new bool;
 	
 	CreateTexture();
 
@@ -135,7 +134,7 @@ void Application::Render()
 
 void Application::UI() {
 	ImGui();
-	ImageVisor(pOpen);
+	ImageVisor();
 }
 
 void Application::ImGui()
@@ -172,7 +171,7 @@ void Application::ImGui()
 
 
 	// Or here
-	ImGui::Begin("Editor");
+	ImGui::Begin("Editor",0, ImGuiWindowFlags_NoCollapse);
 	/*if (ImGui::ImageButton(my_tex_id, ImVec2(32, 32), ImVec2(0, 0), ImVec2(32.0f / my_tex_w, 32 / my_tex_h), frame_padding, ImVec4(0.0f, 0.0f, 0.0f, 1.0f))) {
 
 	}*/
@@ -290,19 +289,13 @@ void Application::KernellView(std::vector<int> &arr, int &columns_count, int& li
 	}
 }
 
-void Application::ImageVisor(bool *pOpen)
+void Application::ImageVisor()
 {
-	
 
-	float auxLeftPaddingX = float(leftPanningX)/image.drawImg.cols;
-	float auxLeftPaddingY = float(leftPanningY)/image.drawImg.rows;
-	float auxRightPaddingX = float(rightPanningX) / image.drawImg.cols;
-	float auxRightPaddingY = float(rightPanningY) / image.drawImg.rows;
+	int drawCols = image.drawImg.cols;
+	int drawRows = image.drawImg.rows;
 
-	int drawCols = abs(image.drawImg.cols - leftPanningX - (image.drawImg.cols - rightPanningX));
-	int drawRows = abs(image.drawImg.rows - leftPanningY - (image.drawImg.rows - rightPanningY));
-	
-	ImGui::Begin("Image", pOpen, ImGuiWindowFlags_AlwaysAutoResize);
+	ImGui::Begin("Image", 0, ImGuiWindowFlags_AlwaysAutoResize|ImGuiWindowFlags_NoMove|ImGuiWindowFlags_NoCollapse);
 
 	if (ImGui::ArrowButton("##left", ImGuiDir_Left)) { 
 		image.Undo();
@@ -322,18 +315,21 @@ void Application::ImageVisor(bool *pOpen)
 	
 	//ImGui::PushStyleVar(ImGuiStyleVar_Alpha, ImGui::GetStyle().Alpha * 0.5f);
 	ImGui::Separator();
-
-	//ImGui::Image((void*)(intptr_t)texture, ImVec2(drawCols  * image.zoom, drawRows * image.zoom),ImVec2(auxLeftPaddingX, auxLeftPaddingY), ImVec2(auxRightPaddingX, auxRightPaddingY));
 	
-
 	// Or here
-	static ImVec2 size(drawCols, drawRows), offset(100, 100);
+	static ImVec2 size(drawCols, drawRows), offset(0, 0);
 	ImVec2 pos = ImGui::GetCursorScreenPos();
 	ImVec4 clip_rect(pos.x, pos.y, pos.x + size.x, pos.y + size.y);
 	ImGui::InvisibleButton("##dummy", size);
-	if (ImGui::IsItemActive() && ImGui::IsMouseDragging(0)) { offset.x += ImGui::GetIO().MouseDelta.x; offset.y += ImGui::GetIO().MouseDelta.y; }
-	ImGui::GetWindowDrawList()->AddRectFilled(pos, ImVec2(pos.x + size.x, pos.y + size.y), IM_COL32(120, 120, 120, 255));
-	ImGui::GetWindowDrawList()->AddImage((void*)(intptr_t)texture, ImVec2(pos.x + offset.x, pos.y + offset.y), ImVec2(pos.x + offset.x + drawCols, pos.y + offset.y+ drawRows));
+	if (ImGui::IsItemActive() && ImGui::IsMouseDragging(0)) { 
+		offset.x += ImGui::GetIO().MouseDelta.x; 
+		offset.y += ImGui::GetIO().MouseDelta.y;
+		if (offset.y <= 0.0) {
+			offset.y = 0.0;
+		}
+	}
+	
+	ImGui::GetWindowDrawList()->AddImage((void*)(intptr_t)texture, ImVec2(pos.x + offset.x, pos.y + offset.y), ImVec2(pos.x + offset.x + drawCols * zoom, pos.y + offset.y+ drawRows * zoom));
 
 	ImGui::End();
 
