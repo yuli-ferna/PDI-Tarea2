@@ -9,6 +9,8 @@ class Image
 public:
 	cv::Mat oImg,cImg,drawImg;
 	cv::Point2f center;
+	bool showRedo, showUndo;
+	unsigned int texture;
 	float rotation;
 	float zoom;
 	std::list<cv::Mat> history;
@@ -19,9 +21,8 @@ public:
 	void Save(std::string name);
 	void Undo();
 	void Redo();
+	void createTexture();
 	void addHistory(cv::Mat);
 
 	void printHistory();
-
-
 };

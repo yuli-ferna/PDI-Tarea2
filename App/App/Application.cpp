@@ -188,7 +188,7 @@ void Application::ImGui()
 
 	if (ImGui::CollapsingHeader("Info"))
 	{
-		ImGui::Text("size = %d x %d", cols, rows);
+		ImGui::Text("size = %d x %d", image.drawImg.cols, image.drawImg.rows);
 		
 	}
 	if (ImGui::CollapsingHeader("Morphology"))
@@ -235,7 +235,7 @@ void Application::ThresholdSection()
 	}
 	if (ImGui::Button("Apply")) {
 		event.threshold(image);
-		CreateTexture();
+		//CreateTexture();
 	}
 }
 
@@ -245,22 +245,22 @@ void Application::MorphologySection() {
 
 	if (ImGui::Button("Erode")) {
 		event.erode(image);
-		CreateTexture();
+		//CreateTexture();
 	}
 	ImGui::SameLine();
 	if (ImGui::Button("Dilate")) {
 		event.dilate(image);
-		CreateTexture();
+		//CreateTexture();
 	}
 	ImGui::SameLine();
 	if (ImGui::Button("Open")) {
 		event.morphOpen(image);
-		CreateTexture();
+		//CreateTexture();
 	}
 	ImGui::SameLine();
 	if (ImGui::Button("Close")) {
 		event.morphClose(image);
-		CreateTexture();
+		//CreateTexture();
 	}
 
 
@@ -328,19 +328,22 @@ void Application::ImageVisor()
 	int drawRows = image.drawImg.rows;
 
 	ImGui::Begin("Image", 0, ImGuiWindowFlags_NoMove|ImGuiWindowFlags_NoCollapse|ImGuiWindowFlags_NoResize);
-	if (ImGui::ArrowButton("##left", ImGuiDir_Left)) { 
+	if (image.showUndo && ImGui::ArrowButton("##left", ImGuiDir_Left)) { 
 		image.Undo();
-		CreateTexture();
+		//CreateTexture();
 
 	}
 	
 	//ImGui::PushStyleVar(ImGuiStyleVar_Alpha, ImGui::GetStyle().Alpha * 0.5f);
 	//float spacing = ImGui::GetStyle().ItemInnerSpacing.x;
+	if (image.showRedo)
+	{
+		ImGui::SameLine();
+		if (ImGui::ArrowButton("##right", ImGuiDir_Right)) {
+			image.Redo();
+			//CreateTexture();
 
-	ImGui::SameLine();
-	if (ImGui::ArrowButton("##right", ImGuiDir_Right)) { 
-		image.Redo();
-		CreateTexture();
+		}
 
 	}
 	
@@ -348,7 +351,7 @@ void Application::ImageVisor()
 	ImGui::Separator();
 
 	ImGui::BeginChildFrame(ImGui::GetID("Image"), ImVec2(1024, 800), ImGuiWindowFlags_HorizontalScrollbar);
-	ImGui::Image((void*)(intptr_t)texture, ImVec2(drawCols * image.zoom, drawRows * image.zoom));
+	ImGui::Image((void*)(intptr_t)image.texture, ImVec2(drawCols * image.zoom, drawRows * image.zoom));
 	ImGui::EndChildFrame();
 
 	ImGui::End();
@@ -372,10 +375,10 @@ void Application::HelpMarker(const char* desc)
 }
 
 void Application::CreateTexture() {
-	glDeleteTextures(1, &texture);
+	glDeleteTextures(1, &image.texture);
 	
-	glGenTextures(1, &texture);
-	glBindTexture(GL_TEXTURE_2D, texture);
+	glGenTextures(1, &image.texture);
+	glBindTexture(GL_TEXTURE_2D, image.texture);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	//glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);

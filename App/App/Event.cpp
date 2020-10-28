@@ -52,24 +52,28 @@ cv::Mat Event::getMorphMat() {
 void Event::erode(Image& image)
 {
 	cv::erode(image.drawImg, image.drawImg, getMorphMat());
+	//image.createTexture();
 	image.addHistory(image.drawImg);
 }
 
 void Event::dilate(Image& image)
 {
 	cv::dilate(image.drawImg, image.drawImg, getMorphMat());
+	//image.createTexture();
 	image.addHistory(image.drawImg);
 }
 
 void Event::morphOpen(Image& image)
 {
 	morphologyEx(image.drawImg, image.drawImg, cv::MORPH_OPEN, getMorphMat());
+	//image.createTexture();
 	image.addHistory(image.drawImg);
 }
 
 void Event::morphClose(Image& image)
 {
 	morphologyEx(image.drawImg, image.drawImg, cv::MORPH_CLOSE, getMorphMat());
+	//image.createTexture();
 	image.addHistory(image.drawImg);
 }
 
@@ -92,5 +96,6 @@ void Event::threshold(Image& image)
 	cv::cvtColor(image.drawImg, grayScale, cv::COLOR_BGR2GRAY);
 	cv::threshold(grayScale, image.drawImg, thresh, maxValue, thresholdType);
 	cv::cvtColor(image.drawImg, image.drawImg, cv::COLOR_GRAY2BGR);
+	//image.createTexture();
 	image.addHistory(image.drawImg);
 }
