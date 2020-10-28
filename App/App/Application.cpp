@@ -199,55 +199,95 @@ void Application::ImGui()
 		ImGui::Text("size = %d x %d", cols, rows);
 		
 	}
+	if (ImGui::CollapsingHeader("Morphology"))
+	{
+		MorphologySection();
+	}
+	if (ImGui::CollapsingHeader("Threshold"))
+	{
+		ThresholdSection();
 
-	MorphologySection();
-	
+	}
 	ImGui::End();
 }
 
-void Application::MorphologySection() {
-	if (ImGui::CollapsingHeader("Morphology"))
-	{
-		ImGui::Text("Actions:");
-
-		if (ImGui::Button("Erode")) {
-			event.erode(image);
-			CreateTexture();
-		}
-		ImGui::SameLine();
-		if (ImGui::Button("Dilate")) {
-			event.dilate(image);
-			CreateTexture();
-		}
-		ImGui::SameLine();
-		if (ImGui::Button("Open")) {
-			event.morphOpen(image);
-			CreateTexture();
-		}
-		ImGui::SameLine();
-		if (ImGui::Button("Close")) {
-			event.morphClose(image);
-			CreateTexture();
-		}
-
-
-		ImGui::Text("Structuring Element Type:");
-		ImGui::RadioButton("MORPH_RECT", &event.structElem, 0); ImGui::SameLine();
-		ImGui::RadioButton("MORPH_CROSS", &event.structElem, 1);
-		ImGui::RadioButton("MORPH_ELLIPSE", &event.structElem, 2); ImGui::SameLine();
-		ImGui::RadioButton("Arbitrary kernel", &event.structElem, 3);
-		ImGui::Separator();
-		if (event.structElem == 3)
+void Application::ThresholdSection() 
+{
+	const double f64_zero = 0.;
+	const double f64_one = 1.;
+	const ImU8 u8_min = 0;
+	const ImU8 u8_max = 255;
+	ImGui::Text("Methods:");
+	ImGui::Combo("", &event.typeThresh, "OTSU\0TRIANGLE\0\0");
+	ImGui::InputDouble("Thresh", &event.thresh, 1.f, 1.f, "%.0f");
+	if (ImGui::IsItemEdited()) {
+		if (event.thresh < 0)
 		{
-			KernellView(event.kernel, event.col, event.row);
-		} else {
-			ImGui::Text("Kernel size(2n + 1):"); ImGui::SameLine();
-			ImGui::SetNextItemWidth(ImGui::GetFontSize() * 8);
-			if (ImGui::InputInt("", &event.structElemSize)) {
-				if (event.structElemSize < 1)
-				{
-					event.structElemSize = 1;
-				}
+			event.thresh = 0;
+		}
+		if (event.thresh > 255)
+		{
+			event.thresh = 255;
+		}
+	}
+	ImGui::InputDouble("Max Value", &event.maxValue, 1.f, 1.f, "%.0f");
+	if (ImGui::IsItemEdited()) {
+		if (event.maxValue < 0)
+		{
+			event.maxValue = 0;
+		}
+		if (event.maxValue > 255)
+		{
+			event.maxValue = 255;
+		}
+	}
+	if (ImGui::Button("Apply")) {
+		event.threshold(image);
+		CreateTexture();
+	}
+}
+
+void Application::MorphologySection() {
+	
+	ImGui::Text("Actions:");
+
+	if (ImGui::Button("Erode")) {
+		event.erode(image);
+		CreateTexture();
+	}
+	ImGui::SameLine();
+	if (ImGui::Button("Dilate")) {
+		event.dilate(image);
+		CreateTexture();
+	}
+	ImGui::SameLine();
+	if (ImGui::Button("Open")) {
+		event.morphOpen(image);
+		CreateTexture();
+	}
+	ImGui::SameLine();
+	if (ImGui::Button("Close")) {
+		event.morphClose(image);
+		CreateTexture();
+	}
+
+
+	ImGui::Text("Structuring Element Type:");
+	ImGui::RadioButton("MORPH_RECT", &event.structElem, 0); ImGui::SameLine();
+	ImGui::RadioButton("MORPH_CROSS", &event.structElem, 1);
+	ImGui::RadioButton("MORPH_ELLIPSE", &event.structElem, 2); ImGui::SameLine();
+	ImGui::RadioButton("Arbitrary kernel", &event.structElem, 3);
+	ImGui::Separator();
+	if (event.structElem == 3)
+	{
+		KernellView(event.kernel, event.col, event.row);
+	} else {
+		ImGui::Text("Kernel size(2n + 1):"); ImGui::SameLine();
+		ImGui::SetNextItemWidth(ImGui::GetFontSize() * 8);
+		if (ImGui::InputInt("", &event.structElemSize)) {
+			if (event.structElemSize < 1)
+			{
+				event.structElemSize = 1;
 			}
 		}
 	}

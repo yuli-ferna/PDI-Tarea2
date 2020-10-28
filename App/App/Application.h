@@ -36,6 +36,7 @@ public:
 	void Render();
 	void UI();
 	void ImGui();
+	void ThresholdSection();
 	void MorphologySection();
 	void KernellView(std::vector<int>& arr, int& columns_count, int& lines_count);
 
