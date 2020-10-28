@@ -56,7 +56,9 @@ void Image::Undo()
 		{
 			showUndo = false;
 		}
+		createTexture();
 	}
+
 }
 
 void Image::Redo()
@@ -71,6 +73,7 @@ void Image::Redo()
 		if (historyUndo.size() == 0) {
 			showRedo = false;
 		}
+		createTexture();
 
 	}
 }
@@ -79,8 +82,10 @@ void Image::addHistory(cv::Mat instruction)
 {
 
 	history.push_back(instruction.clone());
+
 	if (history.size() > 1)
 	{
+		createTexture();
 		showUndo = true;
 	}
 	
