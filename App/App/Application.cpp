@@ -93,6 +93,8 @@ void Application::MainLoop()
 	image.createTexture();
 	//image.createTextureHist();
 
+	translateX = 0;
+	translateY = 0;
 	while (!glfwWindowShouldClose(window))
 	{
 		glfwGetFramebufferSize(window, &windowWidth, &windowHeight);
@@ -150,6 +152,8 @@ void Application::ImGui()
 				{
 					image = Image(newFile);
 					image.createTexture();
+					translateX = 0;
+					translateY = 0;
 				}
 			}
 			if (ImGui::MenuItem("Save", "")) {
@@ -175,8 +179,10 @@ void Application::ImGui()
 
 	ImGui::SliderFloat("Zoom", &image.zoom, 0.1f, 3.0f);
 
-	ImGui::SliderInt("Panning Left X", &translateX, -image.drawImg.cols, image.drawImg.cols,"%d");
-	ImGui::SliderInt("Panning Left Y", &translateY, -image.drawImg.rows, image.drawImg.rows,"%d");
+	if (ImGui::SliderInt("Panning Left X", &translateX, -image.drawImg.cols, image.drawImg.cols, "%d"))
+		traslateEvent();
+	if(ImGui::SliderInt("Panning Left Y", &translateY, -image.drawImg.rows, image.drawImg.rows,"%d"))
+		traslateEvent();
 
 	ImGui::SliderFloat("Rotate", &image.rotation, 0.0f, 360.0f, "%.1f �");
 	//ImGui::SliderAngle("slider angle", &image.rotation);
@@ -397,6 +403,15 @@ void Application::rotationEvent(double angle) {
 
 	cv::warpAffine(image.cImg, image.drawImg, rot, bbox.size());
 	image.createTexture();
+
+}
+
+void Application::traslateEvent() {
+	
+	cv::Mat trans_mat = (cv::Mat_<double>(2, 3) << 1, 0, translateX, 0, 1, translateY);
+	cv::warpAffine(image.cImg.clone(), image.drawImg, trans_mat, img.size());
+	image.createTexture();
+
 }
 
 std::string Application::loadPath(bool open)

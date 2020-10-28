@@ -2,7 +2,9 @@
 
 Image::Image(std::string path)
 {
-	oImg = cImg = drawImg = cv::imread(path);
+	oImg = cv::imread(path);
+	cImg = oImg.clone();
+	drawImg = oImg.clone();
 	center = cv::Point2f((cImg.cols - 1.0) / 2.0, (cImg.rows - 1.0) / 2.0);
 	rotation = 0.0;
 	zoom = 1.0;
