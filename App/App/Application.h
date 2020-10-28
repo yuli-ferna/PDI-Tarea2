@@ -43,6 +43,8 @@ public:
 
 	void rotationEvent(double angle);
 
+	void traslateEvent();
+
 	std::string loadPath(bool open);
 
 	static void HelpMarker(const char* desc);
