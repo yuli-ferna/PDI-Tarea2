@@ -18,8 +18,8 @@ cv::Mat Event::getKernel() {
 	std::vector<int> subKernel;
 	int MatSize = row * col;
 	subKernel.insert(subKernel.begin(),  kernel.begin(), kernel.begin() + MatSize);
-	cv::Mat asd = cv::Mat(row, col, CV_32SC1, subKernel.data());
-	std::cout << asd << std::endl;
+	/*cv::Mat asd = cv::Mat(row, col, CV_32SC1, subKernel.data());
+	std::cout << asd << std::endl;*/
 	return cv::Mat(row, col, CV_32SC1, subKernel.data());
 }
 
