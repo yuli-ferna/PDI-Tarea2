@@ -290,8 +290,7 @@ void Application::MorphologySection() {
 }
 
 void Application::Histogram() {
-	//ImGui::Image((void*)(intptr_t)image.histTexture, ImVec2(362, 150));
-
+	ImGui::Image((void*)(intptr_t)image.histTexture, ImVec2(362, 150));
 }
 
 void Application::KernellView(std::vector<int> &arr, int &columns_count, int& lines_count) {
