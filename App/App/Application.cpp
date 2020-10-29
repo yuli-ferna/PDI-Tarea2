@@ -87,7 +87,7 @@ Application::~Application() {
 
 void Application::MainLoop()
 {	
-	std::string path = "../momo.jpg";
+	std::string path = "../examples/momo.jpg";
 	image = Image(path);
 	event = Event();
 	image.createTexture();
@@ -158,6 +158,9 @@ void Application::ImGui()
 				}
 			}
 			if (ImGui::MenuItem("Save", "")) {
+				image.Save(image.path);
+			}
+			if (ImGui::MenuItem("Save as", "")) {
 				std::string newFile = loadPath(false);
 				if (newFile != "")
 				{
@@ -339,21 +342,32 @@ void Application::ImageVisor()
 
 	ImGui::Begin("Image", 0, ImGuiWindowFlags_NoMove|ImGuiWindowFlags_NoCollapse|ImGuiWindowFlags_NoResize);
 	
-	if (image.showUndo && ImGui::ArrowButton("##left", ImGuiDir_Left)) { 
+	ImGui::PushItemFlag(ImGuiItemFlags_Disabled, !image.showUndo);
+	ImGui::PushStyleVar(ImGuiStyleVar_Alpha, ImGui::GetStyle().Alpha * (image.showUndo ? 1.0f : 0.5f));
+	
+	if (ImGui::ArrowButton("##left", ImGuiDir_Left)) { 
 		image.Undo();
 	}
 	
-	if (image.showRedo)
-	{
-		ImGui::SameLine();
-		if (ImGui::ArrowButton("##right", ImGuiDir_Right)) {
-			image.Redo();
-		}
+	ImGui::PopItemFlag();
+	ImGui::PopStyleVar();
+	
+	ImGui::SameLine();
+
+	ImGui::PushItemFlag(ImGuiItemFlags_Disabled, !image.showRedo);
+	ImGui::PushStyleVar(ImGuiStyleVar_Alpha, ImGui::GetStyle().Alpha * (image.showRedo ? 1.0f : 0.5f));
+	
+	if (ImGui::ArrowButton("##right", ImGuiDir_Right)) {
+		image.Redo();
 	}
-	if (!image.showUndo && !image.showRedo)
+	
+	ImGui::PopItemFlag();
+	ImGui::PopStyleVar();
+	
+	/*if (!image.showUndo && !image.showRedo)
 	{
 		ImGui::Dummy(ImVec2(0.0f, 20.0f));
-	}
+	}*/
 
 	ImGui::Separator();
 

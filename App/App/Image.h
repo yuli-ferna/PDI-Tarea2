@@ -19,10 +19,11 @@ public:
 	std::vector<cv::Mat> histogram;
 	std::list<cv::Mat> history;
 	std::list<cv::Mat> historyUndo;
-	Image(std::string path = "");
+	std::string path;
+ 	Image(std::string p = "");
 	~Image();
 	void createTextureHist();
-	void Load(std::string path);
+	void Load(std::string p);
 	void Save(std::string name);
 	void Undo();
 	void Redo();

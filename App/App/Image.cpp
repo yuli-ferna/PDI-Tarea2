@@ -1,8 +1,9 @@
 #include "Image.h"
 
-Image::Image(std::string path)
+Image::Image(std::string p)
 {
-	oImg = cv::imread(path);
+	path = p;
+	oImg = cv::imread(p);
 	cImg = oImg.clone();
 	drawImg = oImg.clone();
 	center = cv::Point2f((cImg.cols - 1.0) / 2.0, (cImg.rows - 1.0) / 2.0);
@@ -48,10 +49,10 @@ void Image::setTexture(unsigned int& t, cv::Mat drawImg)
 
 }
 
-void Image::Load(std::string path)
+void Image::Load(std::string p)
 {
-	//oImg = cImg = drawImg = cv::imread(path);
-	oImg = cv::imread(path);
+	//oImg = cImg = drawImg = cv::imread(p);
+	oImg = cv::imread(p);
 	oImg.copyTo(cImg);
 	oImg.copyTo(drawImg);
 }
@@ -59,6 +60,7 @@ void Image::Load(std::string path)
 void Image::Save(std::string name)
 {
 	cv::imwrite(name, drawImg);
+	path = name;
 }
 
 void Image::Undo()
