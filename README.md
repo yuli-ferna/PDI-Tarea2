@@ -19,8 +19,8 @@ para poder correr el proyecto debes seguir los siguientes pasos
 
 * Cuantización/Reducción de colores de una imagen de 24 bits con al menos tres (3) métodos. Por ejemplo: reducción de bits por pixel, conversión a paleta (Popularity Algorithm, Median Cut), k-media, entre otros.
 * En umbralización automática tenemos OTSU y To zero inv (THRESH_TOZERO_INV). En el caso de umbralización to zero, cuando el valor del pixel es mayor a la del umbral se mantiene el mismo gris de la imagen original, mientras que cuando el valor del pixel es menor al umbral se asigna 0 (negro). Para nuestro proyecto elegimos la version invertida, ya que visualmente se aprecian mejor los objetos separados del fondo.
-* Ecualización del Histograma.
-* Morfología (Erosión, dilatación, apertura y cierre). Se deben definir elementos estructurantes por defecto y dar la opción al usuario de crear uno arbitrario.
+* Ecualización del Histograma. Aplicamos la funcion de opencv equalizeHist, en cada canal de la imagen (usando split) y despues usamos merge para unirlos y ese es el resultado que se muestra en pantalla.
+* Morfología (Erosión, dilatación, apertura y cierre). El usuario puede elegir el tipo de elemento estructurante que desee (tenemos las opciones de: Morph_rect, Morph_cross o Morph_ellipse) junto con un n para el tamaño del kernel que viene dado en (2n + 1). Y también puede dar un kernel arbitrario, elegir cantidad de filas y columnas, y poner el valor de cada una de las casillas.
 * Crecimiento de regiones con opción para escoger rango fijo o flotante, además de vecindad a 4 u 8.
 * Aplicación de la Transformada de Fourier para obtener la imagen de Magnitud (Centrada o de Espectro). Luego proveer la opción para aplicar algún filtro paso bajo en el Dominio Frecuencial y aplicar la Transformada de Fourier Inversa para ver el resultado en el Dominio Espacial.
 * Nuestro historial se basa en dos listas que contendrán las imagenes (guardar hasta 4 cambios).
