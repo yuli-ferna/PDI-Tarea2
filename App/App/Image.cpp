@@ -14,9 +14,7 @@ Image::Image(std::string p)
 	histTexture = -1;
 	blueHist = redHist = greenHist = true;
 	addHistory(oImg);
-	createTexture();
-	calHistogram();
-
+	
 	//createTexture();
 }
 
@@ -25,6 +23,11 @@ Image::~Image()
 	if (texture != -1)
 	{
 		glDeleteTextures(1, &texture);
+	}
+	
+	if (histTexture != -1)
+	{
+		glDeleteTextures(1, &histTexture);
 	}
 }
 
@@ -105,11 +108,10 @@ void Image::addHistory(cv::Mat instruction)
 {
 
 	history.push_back(instruction.clone());
-
+	createTexture();
+	calHistogram();
 	if (history.size() > 1)
 	{
-		createTexture();
-		calHistogram();
 		showUndo = true;
 	}
 	
