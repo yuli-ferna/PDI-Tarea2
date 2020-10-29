@@ -18,7 +18,7 @@ para poder correr el proyecto debes seguir los siguientes pasos
 
 
 * Cuantización/Reducción de colores de una imagen de 24 bits con al menos tres (3) métodos. Por ejemplo: reducción de bits por pixel, conversión a paleta (Popularity Algorithm, Median Cut), k-media, entre otros.
-* Umbralización automática con al menos dos métodos: OTSU y algún otro que Ud. considere experimentalmente efectivo para separar objetos del fondo (Triangle).
+* En umbralización automática tenemos OTSU y To zero inv (THRESH_TOZERO_INV). En el caso de umbralización to zero, cuando el valor del pixel es mayor a la del umbral se mantiene el mismo gris de la imagen original, mientras que cuando el valor del pixel es menor al umbral se asigna 0 (negro). Para nuestro proyecto elegimos la version invertida, ya que visualmente se aprecian mejor los objetos separados del fondo.
 * Ecualización del Histograma.
 * Morfología (Erosión, dilatación, apertura y cierre). Se deben definir elementos estructurantes por defecto y dar la opción al usuario de crear uno arbitrario.
 * Crecimiento de regiones con opción para escoger rango fijo o flotante, además de vecindad a 4 u 8.
@@ -26,3 +26,4 @@ para poder correr el proyecto debes seguir los siguientes pasos
 * Nuestro historial se basa en dos listas que contendrán las imagenes (guardar hasta 4 cambios).
 * Traslado (Panning) de la imagen en cualquier dirección.
 * Rotación en ángulo arbitrario (Clockwise y Anticlockwise).
+* Zoom nos ayudamos de los parametros de imgui con una textura con los siguientes parametros:

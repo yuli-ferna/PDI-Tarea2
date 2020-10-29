@@ -218,7 +218,7 @@ void Application::ThresholdSection()
 	const ImU8 u8_min = 0;
 	const ImU8 u8_max = 255;
 	ImGui::Text("Methods:");
-	ImGui::Combo("", &event.typeThresh, "OTSU\0TRIANGLE\0\0");
+	ImGui::Combo("", &event.typeThresh, "OTSU\0TOZERO INV\0TOZERO\0\0");
 	ImGui::InputDouble("Thresh", &event.thresh, 1.f, 1.f, "%.0f");
 	if (ImGui::IsItemEdited()) {
 		if (event.thresh < 0)

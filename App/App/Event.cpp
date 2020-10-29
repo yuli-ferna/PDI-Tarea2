@@ -86,7 +86,10 @@ void Event::threshold(Image& image)
 			thresholdType = cv::THRESH_OTSU;
 			break;
 		case 1:
-			thresholdType = cv::THRESH_TRIANGLE;
+			thresholdType = cv::THRESH_TOZERO_INV;
+			break;
+		case 2:
+			thresholdType = cv::THRESH_TOZERO;
 			break;
 		default:
 			thresholdType = cv::THRESH_TRIANGLE;
