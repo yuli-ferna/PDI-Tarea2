@@ -11,7 +11,10 @@ Image::Image(std::string path)
 	showRedo = showUndo = false;
 	texture = -1;
 	histTexture = -1;
+	blueHist = redHist = greenHist = true;
 	addHistory(oImg);
+	//calHistogram(drawImg);
+
 	//createTexture();
 }
 
@@ -25,13 +28,18 @@ Image::~Image()
 
 void Image::createTexture()
 {
-	if (texture != -1)
+	setTexture(texture, drawImg);
+}
+
+void Image::setTexture(unsigned int& t, cv::Mat drawImg)
+{
+	if (t != -1)
 	{
-		glDeleteTextures(1, &texture);
+		glDeleteTextures(1, &t);
 	}
 
-	glGenTextures(1, &texture);
-	glBindTexture(GL_TEXTURE_2D, texture);
+	glGenTextures(1, &t);
+	glBindTexture(GL_TEXTURE_2D, t);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	//glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);
@@ -68,6 +76,7 @@ void Image::Undo()
 			showUndo = false;
 		}
 		createTexture();
+		calHistogram();
 	}
 
 }
@@ -85,7 +94,7 @@ void Image::Redo()
 			showRedo = false;
 		}
 		createTexture();
-
+		calHistogram();
 	}
 }
 
@@ -97,6 +106,7 @@ void Image::addHistory(cv::Mat instruction)
 	if (history.size() > 1)
 	{
 		createTexture();
+		calHistogram();
 		showUndo = true;
 	}
 	
@@ -135,31 +145,28 @@ void Image::calHistogram()
 	normalize(r_hist, r_hist, 0, histogramImg.rows, cv::NORM_MINMAX, -1, cv::Mat());
 	for (int i = 1; i < histSize; i++)
 	{
-		line(histogramImg, cv::Point(bin_w * (i - 1), hist_h - cvRound(b_hist.at<float>(i - 1))),
-			cv::Point(bin_w * (i), hist_h - cvRound(b_hist.at<float>(i))),
-			cv::Scalar(255, 0, 0), 2, 8, 0);
-		line(histogramImg, cv::Point(bin_w * (i - 1), hist_h - cvRound(g_hist.at<float>(i - 1))),
-			cv::Point(bin_w * (i), hist_h - cvRound(g_hist.at<float>(i))),
-			cv::Scalar(0, 255, 0), 2, 8, 0);
-		line(histogramImg, cv::Point(bin_w * (i - 1), hist_h - cvRound(r_hist.at<float>(i - 1))),
-			cv::Point(bin_w * (i), hist_h - cvRound(r_hist.at<float>(i))),
-			cv::Scalar(0, 0, 255), 2, 8, 0);
+		if (blueHist)
+		{
+			line(histogramImg, cv::Point(bin_w * (i - 1), hist_h - cvRound(b_hist.at<float>(i - 1))),
+				cv::Point(bin_w * (i), hist_h - cvRound(b_hist.at<float>(i))),
+				cv::Scalar(255, 0, 0), 2, cv::FILLED, 0);
+
+		}
+		if (greenHist)
+		{
+			line(histogramImg, cv::Point(bin_w * (i - 1), hist_h - cvRound(g_hist.at<float>(i - 1))),
+				cv::Point(bin_w * (i), hist_h - cvRound(g_hist.at<float>(i))),
+				cv::Scalar(0, 255, 0), 2, cv::FILLED, 0);
+		}
+		if (redHist)
+		{
+			line(histogramImg, cv::Point(bin_w * (i - 1), hist_h - cvRound(r_hist.at<float>(i - 1))),
+				cv::Point(bin_w * (i), hist_h - cvRound(r_hist.at<float>(i))),
+				cv::Scalar(0, 0, 255), 2, cv::FILLED, 0);
+
+		}
 	}
 
-
-	imshow("calcHist Demo", histogramImg);
-
-	if (histTexture != -1)
-	{
-		glDeleteTextures(1, &histTexture);
-	}
-
-	glGenTextures(1, &histTexture);
-	glBindTexture(GL_TEXTURE_2D, histTexture);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	//glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);
-	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, histogramImg.cols, histogramImg.rows, 0, GL_BGR, GL_UNSIGNED_BYTE, histogramImg.data);
-
+	//imshow("calcHist Demo", histogramImg);
+	setTexture(histTexture, histogramImg);
 }

@@ -91,6 +91,7 @@ void Application::MainLoop()
 	image = Image(path);
 	event = Event();
 	image.createTexture();
+	image.calHistogram();
 	//image.createTextureHist();
 
 	translateX = 0;
@@ -204,11 +205,7 @@ void Application::ImGui()
 		ThresholdSection();
 
 	}
-	if (ImGui::Button("calHistogram()"))
-	{
-		image.calHistogram();
-		//image.createTextureHist();
-	}
+	
 	ImGui::End();
 }
 
@@ -273,6 +270,7 @@ void Application::MorphologySection() {
 	ImGui::RadioButton("MORPH_CROSS", &event.structElem, 1);
 	ImGui::RadioButton("MORPH_ELLIPSE", &event.structElem, 2); ImGui::SameLine();
 	ImGui::RadioButton("Arbitrary kernel", &event.structElem, 3);
+
 	ImGui::Separator();
 	if (event.structElem == 3)
 	{
@@ -290,7 +288,14 @@ void Application::MorphologySection() {
 }
 
 void Application::Histogram() {
-	ImGui::Image((void*)(intptr_t)image.histTexture, ImVec2(362, 150));
+	ImGui::Checkbox("Red", &image.redHist); ImGui::SameLine();
+	ImGui::Checkbox("Blue", &image.blueHist); ImGui::SameLine();
+	ImGui::Checkbox("Green", &image.greenHist); ImGui::SameLine();
+	if (ImGui::Button("Show"))
+	{
+		image.calHistogram();
+	}
+	ImGui::Image((void*)(intptr_t)image.histTexture, ImVec2(402, 150));
 }
 
 void Application::KernellView(std::vector<int> &arr, int &columns_count, int& lines_count) {
@@ -353,7 +358,7 @@ void Application::ImageVisor()
 	//ImGui::PushStyleVar(ImGuiStyleVar_Alpha, ImGui::GetStyle().Alpha * 0.5f);
 	ImGui::Separator();
 
-	ImGui::BeginChildFrame(ImGui::GetID("Image"), ImVec2(1024, 800), ImGuiWindowFlags_HorizontalScrollbar);
+	ImGui::BeginChildFrame(ImGui::GetID("Image"), ImVec2(1024, 820), ImGuiWindowFlags_HorizontalScrollbar);
 	ImGui::Image((void*)(intptr_t)image.texture, ImVec2(drawCols * image.zoom, drawRows * image.zoom));
 	ImGui::EndChildFrame();
 

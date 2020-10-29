@@ -15,6 +15,7 @@ public:
 	unsigned int histTexture;
 	float rotation;
 	float zoom;
+	bool blueHist, redHist, greenHist;
 	std::vector<cv::Mat> histogram;
 	std::list<cv::Mat> history;
 	std::list<cv::Mat> historyUndo;
@@ -26,9 +27,7 @@ public:
 	void Undo();
 	void Redo();
 	void createTexture();
+	void setTexture(unsigned int& t, cv::Mat drawImg);
 	void addHistory(cv::Mat);
-
 	void calHistogram();
-
-	void printHistory();
 };
