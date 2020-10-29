@@ -153,6 +153,7 @@ void Application::ImGui()
 				{
 					image = Image(newFile);
 					image.createTexture();
+					image.calHistogram();
 					translateX = 0;
 					translateY = 0;
 				}
@@ -167,6 +168,7 @@ void Application::ImGui()
 					image.Save(newFile);
 				}
 			}
+			
 
 			ImGui::EndMenu();
 		}
@@ -180,7 +182,11 @@ void Application::ImGui()
 	/*if (ImGui::ImageButton(my_tex_id, ImVec2(32, 32), ImVec2(0, 0), ImVec2(32.0f / my_tex_w, 32 / my_tex_h), frame_padding, ImVec4(0.0f, 0.0f, 0.0f, 1.0f))) {
 
 	}*/
-
+	ImGui::Text("size = %d x %d", image.drawImg.cols, image.drawImg.rows);
+	Histogram();
+	if (ImGui::Button("Equalize Histogram")) {
+		event.ecHistogram(image);
+	}
 	ImGui::SliderFloat("Zoom", &image.zoom, 0.1f, 3.0f);
 
 	if (ImGui::SliderInt("Panning Left X", &translateX, -image.drawImg.cols, image.drawImg.cols, "%d"))
@@ -194,11 +200,6 @@ void Application::ImGui()
 		rotationEvent(image.rotation);
 	}
 
-	if (ImGui::CollapsingHeader("Info"))
-	{
-		ImGui::Text("size = %d x %d", image.drawImg.cols, image.drawImg.rows);
-		Histogram();
-	}
 	if (ImGui::CollapsingHeader("Morphology"))
 	{
 		MorphologySection();
@@ -207,8 +208,12 @@ void Application::ImGui()
 	{
 		ThresholdSection();
 	}
-	
+
 	ImGui::End();
+}
+
+void Application::modal() {
+
 }
 
 void Application::ThresholdSection() 

@@ -102,3 +102,16 @@ void Event::threshold(Image& image)
 	//image.createTexture();
 	image.addHistory(image.drawImg);
 }
+
+void Event::ecHistogram(Image& image)
+{
+	std::vector<cv::Mat> bgr_mat;
+	cv::split(image.drawImg, bgr_mat);
+	cv::equalizeHist(bgr_mat[0], bgr_mat[0]);
+	cv::equalizeHist(bgr_mat[1], bgr_mat[1]);
+	cv::equalizeHist(bgr_mat[2], bgr_mat[2]);
+	
+	cv::merge(bgr_mat, image.drawImg);
+	
+	image.addHistory(image.drawImg);
+}

@@ -27,4 +27,5 @@ public:
 	void morphOpen(Image &);
 	void morphClose(Image &);
 	void threshold(Image &);
+	void ecHistogram(Image& image);
 };

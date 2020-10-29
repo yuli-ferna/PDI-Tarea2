@@ -33,6 +33,7 @@ public:
 	void Render();
 	void UI();
 	void ImGui();
+	void modal();
 	void ThresholdSection();
 	void MorphologySection();
 	void Histogram();
