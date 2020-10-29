@@ -203,7 +203,6 @@ void Application::ImGui()
 	if (ImGui::CollapsingHeader("Threshold"))
 	{
 		ThresholdSection();
-
 	}
 	
 	ImGui::End();
@@ -321,7 +320,6 @@ void Application::KernellView(std::vector<int> &arr, int &columns_count, int& li
 			if (ImGui::GetColumnIndex() == 0)
 				ImGui::Separator();
 			
-			//ImGui::Text("%i", arr[i]);
 			ImGui::InputInt("", &arr[i]);
 			ImGui::PopID();
 
@@ -329,7 +327,6 @@ void Application::KernellView(std::vector<int> &arr, int &columns_count, int& li
 		}
 		
 		ImGui::Columns(1);
-		//if (h_borders)
 		ImGui::Separator();
 		ImGui::TreePop();
 	}
@@ -341,12 +338,11 @@ void Application::ImageVisor()
 	int drawRows = image.drawImg.rows;
 
 	ImGui::Begin("Image", 0, ImGuiWindowFlags_NoMove|ImGuiWindowFlags_NoCollapse|ImGuiWindowFlags_NoResize);
+	
 	if (image.showUndo && ImGui::ArrowButton("##left", ImGuiDir_Left)) { 
 		image.Undo();
 	}
 	
-	//ImGui::PushStyleVar(ImGuiStyleVar_Alpha, ImGui::GetStyle().Alpha * 0.5f);
-	//float spacing = ImGui::GetStyle().ItemInnerSpacing.x;
 	if (image.showRedo)
 	{
 		ImGui::SameLine();
@@ -354,11 +350,14 @@ void Application::ImageVisor()
 			image.Redo();
 		}
 	}
-	
-	//ImGui::PushStyleVar(ImGuiStyleVar_Alpha, ImGui::GetStyle().Alpha * 0.5f);
+	if (!image.showUndo && !image.showRedo)
+	{
+		ImGui::Dummy(ImVec2(0.0f, 20.0f));
+	}
+
 	ImGui::Separator();
 
-	ImGui::BeginChildFrame(ImGui::GetID("Image"), ImVec2(1024, 820), ImGuiWindowFlags_HorizontalScrollbar);
+	ImGui::BeginChildFrame(ImGui::GetID("Image"), ImVec2(1024, 815), ImGuiWindowFlags_HorizontalScrollbar);
 	ImGui::Image((void*)(intptr_t)image.texture, ImVec2(drawCols * image.zoom, drawRows * image.zoom));
 	ImGui::EndChildFrame();
 
@@ -394,7 +393,7 @@ void Application::processKeyboardInput(GLFWwindow* window) {
 
 void Application::rotationEvent(double angle) {
 	
-	
+	//in event class
 	//cv::resize(image.cImg, image.drawImg, cv::Size(), image.zoom, image.zoom);
 	cv::Point2f center = cv::Point2f((image.cImg.cols - 1.0) / 2.0, (image.cImg.rows - 1.0) / 2.0);
 
@@ -411,7 +410,7 @@ void Application::rotationEvent(double angle) {
 }
 
 void Application::traslateEvent() {
-	
+	//in event class
 	cv::Mat trans_mat = (cv::Mat_<double>(2, 3) << 1, 0, translateX, 0, 1, translateY);
 	cv::warpAffine(image.cImg.clone(), image.drawImg, trans_mat, img.size());
 	image.createTexture();
