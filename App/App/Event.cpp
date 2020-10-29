@@ -49,35 +49,35 @@ cv::Mat Event::getMorphMat() {
 	return element;
 }
 
-void Event::erode(Image& image)
+void Event::erode(Image* image)
 {
-	cv::erode(image.drawImg, image.drawImg, getMorphMat());
-	//image.createTexture();
-	image.addHistory(image.drawImg);
+	cv::erode(image->drawImg, image->drawImg, getMorphMat());
+	//image->createTexture();
+	image->addHistory(image->drawImg);
 }
 
-void Event::dilate(Image& image)
+void Event::dilate(Image* image)
 {
-	cv::dilate(image.drawImg, image.drawImg, getMorphMat());
-	//image.createTexture();
-	image.addHistory(image.drawImg);
+	cv::dilate(image->drawImg, image->drawImg, getMorphMat());
+	//image->createTexture();
+	image->addHistory(image->drawImg);
 }
 
-void Event::morphOpen(Image& image)
+void Event::morphOpen(Image* image)
 {
-	morphologyEx(image.drawImg, image.drawImg, cv::MORPH_OPEN, getMorphMat());
-	//image.createTexture();
-	image.addHistory(image.drawImg);
+	morphologyEx(image->drawImg, image->drawImg, cv::MORPH_OPEN, getMorphMat());
+	//image->createTexture();
+	image->addHistory(image->drawImg);
 }
 
-void Event::morphClose(Image& image)
+void Event::morphClose(Image* image)
 {
-	morphologyEx(image.drawImg, image.drawImg, cv::MORPH_CLOSE, getMorphMat());
-	//image.createTexture();
-	image.addHistory(image.drawImg);
+	morphologyEx(image->drawImg, image->drawImg, cv::MORPH_CLOSE, getMorphMat());
+	//image->createTexture();
+	image->addHistory(image->drawImg);
 }
 
-void Event::threshold(Image& image)
+void Event::threshold(Image* image)
 {
 	int thresholdType;
 	switch (typeThresh)
@@ -96,22 +96,22 @@ void Event::threshold(Image& image)
 			break;
 	}
 	cv::Mat grayScale;
-	cv::cvtColor(image.drawImg, grayScale, cv::COLOR_BGR2GRAY);
-	cv::threshold(grayScale, image.drawImg, thresh, maxValue, thresholdType);
-	cv::cvtColor(image.drawImg, image.drawImg, cv::COLOR_GRAY2BGR);
-	//image.createTexture();
-	image.addHistory(image.drawImg);
+	cv::cvtColor(image->drawImg, grayScale, cv::COLOR_BGR2GRAY);
+	cv::threshold(grayScale, image->drawImg, thresh, maxValue, thresholdType);
+	cv::cvtColor(image->drawImg, image->drawImg, cv::COLOR_GRAY2BGR);
+	//image->createTexture();
+	image->addHistory(image->drawImg);
 }
 
-void Event::ecHistogram(Image& image)
+void Event::ecHistogram(Image* image)
 {
 	std::vector<cv::Mat> bgr_mat;
-	cv::split(image.drawImg, bgr_mat);
+	cv::split(image->drawImg, bgr_mat);
 	cv::equalizeHist(bgr_mat[0], bgr_mat[0]);
 	cv::equalizeHist(bgr_mat[1], bgr_mat[1]);
 	cv::equalizeHist(bgr_mat[2], bgr_mat[2]);
 	
-	cv::merge(bgr_mat, image.drawImg);
+	cv::merge(bgr_mat, image->drawImg);
 	
-	image.addHistory(image.drawImg);
+	image->addHistory(image->drawImg);
 }

@@ -11,6 +11,7 @@ class Application
 
 	GLFWwindow *window;
 	int windowWidth, windowHeight;
+	int canvaWidth, canvaHeight;
 	bool show_demo_window = true;
 
 	int lowThreshold = 7, highThreshold = 50;
@@ -18,7 +19,7 @@ class Application
 	cv::Vec2d mouse;
 	cv::Mat img,img2;
 	int translateX, translateY;
-	Image image;
+	Image *image;
 	Event event;
 	bool p_open;
 

@@ -88,11 +88,11 @@ Application::~Application() {
 void Application::MainLoop()
 {	
 	std::string path = "../examples/momo.jpg";
-	image = Image(path);
+	image = new Image(path);
 	event = Event();
-	image.createTexture();
-	image.calHistogram();
-	//image.createTextureHist();
+	/*image->createTexture();
+	image->calHistogram();*/
+	//image->createTextureHist();
 
 	translateX = 0;
 	translateY = 0;
@@ -151,21 +151,21 @@ void Application::ImGui()
 				std::string newFile = loadPath(true);
 				if (newFile != "")
 				{
-					image = Image(newFile);
-					image.createTexture();
-					image.calHistogram();
+					image = new Image(newFile);
+					image->createTexture();
+					image->calHistogram();
 					translateX = 0;
 					translateY = 0;
 				}
 			}
 			if (ImGui::MenuItem("Save", "")) {
-				image.Save(image.path);
+				image->Save(image->path);
 			}
 			if (ImGui::MenuItem("Save as", "")) {
 				std::string newFile = loadPath(false);
 				if (newFile != "")
 				{
-					image.Save(newFile);
+					image->Save(newFile);
 				}
 			}
 			
@@ -182,22 +182,22 @@ void Application::ImGui()
 	/*if (ImGui::ImageButton(my_tex_id, ImVec2(32, 32), ImVec2(0, 0), ImVec2(32.0f / my_tex_w, 32 / my_tex_h), frame_padding, ImVec4(0.0f, 0.0f, 0.0f, 1.0f))) {
 
 	}*/
-	ImGui::Text("size = %d x %d", image.drawImg.cols, image.drawImg.rows);
+	ImGui::Text("size = %d x %d", image->drawImg.cols, image->drawImg.rows);
 	Histogram();
 	if (ImGui::Button("Equalize Histogram")) {
 		event.ecHistogram(image);
 	}
-	ImGui::SliderFloat("Zoom", &image.zoom, 0.1f, 3.0f);
+	ImGui::SliderFloat("Zoom", &image->zoom, 0.1f, 3.0f);
 
-	if (ImGui::SliderInt("Panning Left X", &translateX, -image.drawImg.cols, image.drawImg.cols, "%d"))
+	if (ImGui::SliderInt("Panning Left X", &translateX, -image->drawImg.cols, image->drawImg.cols, "%d"))
 		traslateEvent();
-	if(ImGui::SliderInt("Panning Left Y", &translateY, -image.drawImg.rows, image.drawImg.rows,"%d"))
+	if(ImGui::SliderInt("Panning Left Y", &translateY, -image->drawImg.rows, image->drawImg.rows,"%d"))
 		traslateEvent();
 
-	ImGui::SliderFloat("Rotate", &image.rotation, 0.0f, 360.0f, "%.1f �");
-	//ImGui::SliderAngle("slider angle", &image.rotation);
+	ImGui::SliderFloat("Rotate", &image->rotation, 0.0f, 360.0f, "%.1f �");
+	//ImGui::SliderAngle("slider angle", &image->rotation);
 	if (ImGui::IsItemEdited()) {
-		rotationEvent(image.rotation);
+		rotationEvent(image->rotation);
 	}
 
 	if (ImGui::CollapsingHeader("Morphology"))
@@ -295,14 +295,14 @@ void Application::MorphologySection() {
 }
 
 void Application::Histogram() {
-	ImGui::Checkbox("Red", &image.redHist); ImGui::SameLine();
-	ImGui::Checkbox("Blue", &image.blueHist); ImGui::SameLine();
-	ImGui::Checkbox("Green", &image.greenHist); ImGui::SameLine();
+	ImGui::Checkbox("Red", &image->redHist); ImGui::SameLine();
+	ImGui::Checkbox("Blue", &image->blueHist); ImGui::SameLine();
+	ImGui::Checkbox("Green", &image->greenHist); ImGui::SameLine();
 	if (ImGui::Button("Show"))
 	{
-		image.calHistogram();
+		image->calHistogram();
 	}
-	ImGui::Image((void*)(intptr_t)image.histTexture, ImVec2(402, 150));
+	ImGui::Image((void*)(intptr_t)image->histTexture, ImVec2(402, 150));
 }
 
 void Application::KernellView(std::vector<int> &arr, int &columns_count, int& lines_count) {
@@ -342,16 +342,16 @@ void Application::KernellView(std::vector<int> &arr, int &columns_count, int& li
 
 void Application::ImageVisor()
 {
-	int drawCols = image.drawImg.cols;
-	int drawRows = image.drawImg.rows;
+	int drawCols = image->drawImg.cols;
+	int drawRows = image->drawImg.rows;
 
 	ImGui::Begin("Image", 0, ImGuiWindowFlags_NoMove|ImGuiWindowFlags_NoCollapse|ImGuiWindowFlags_NoResize);
 	
-	ImGui::PushItemFlag(ImGuiItemFlags_Disabled, !image.showUndo);
-	ImGui::PushStyleVar(ImGuiStyleVar_Alpha, ImGui::GetStyle().Alpha * (image.showUndo ? 1.0f : 0.5f));
+	ImGui::PushItemFlag(ImGuiItemFlags_Disabled, !image->showUndo);
+	ImGui::PushStyleVar(ImGuiStyleVar_Alpha, ImGui::GetStyle().Alpha * (image->showUndo ? 1.0f : 0.5f));
 	
 	if (ImGui::ArrowButton("##left", ImGuiDir_Left)) { 
-		image.Undo();
+		image->Undo();
 	}
 	
 	ImGui::PopItemFlag();
@@ -359,17 +359,17 @@ void Application::ImageVisor()
 	
 	ImGui::SameLine();
 
-	ImGui::PushItemFlag(ImGuiItemFlags_Disabled, !image.showRedo);
-	ImGui::PushStyleVar(ImGuiStyleVar_Alpha, ImGui::GetStyle().Alpha * (image.showRedo ? 1.0f : 0.5f));
+	ImGui::PushItemFlag(ImGuiItemFlags_Disabled, !image->showRedo);
+	ImGui::PushStyleVar(ImGuiStyleVar_Alpha, ImGui::GetStyle().Alpha * (image->showRedo ? 1.0f : 0.5f));
 	
 	if (ImGui::ArrowButton("##right", ImGuiDir_Right)) {
-		image.Redo();
+		image->Redo();
 	}
 	
 	ImGui::PopItemFlag();
 	ImGui::PopStyleVar();
 	
-	/*if (!image.showUndo && !image.showRedo)
+	/*if (!image->showUndo && !image->showRedo)
 	{
 		ImGui::Dummy(ImVec2(0.0f, 20.0f));
 	}*/
@@ -377,7 +377,7 @@ void Application::ImageVisor()
 	ImGui::Separator();
 
 	ImGui::BeginChildFrame(ImGui::GetID("Image"), ImVec2(1024, 815), ImGuiWindowFlags_HorizontalScrollbar);
-	ImGui::Image((void*)(intptr_t)image.texture, ImVec2(drawCols * image.zoom, drawRows * image.zoom));
+	ImGui::Image((void*)(intptr_t)image->texture, ImVec2(drawCols * image->zoom, drawRows * image->zoom));
 	ImGui::EndChildFrame();
 
 	ImGui::End();
@@ -413,26 +413,26 @@ void Application::processKeyboardInput(GLFWwindow* window) {
 void Application::rotationEvent(double angle) {
 	
 	//in event class
-	//cv::resize(image.cImg, image.drawImg, cv::Size(), image.zoom, image.zoom);
-	cv::Point2f center = cv::Point2f((image.cImg.cols - 1.0) / 2.0, (image.cImg.rows - 1.0) / 2.0);
+	//cv::resize(image->cImg, image->drawImg, cv::Size(), image->zoom, image->zoom);
+	cv::Point2f center = cv::Point2f((image->cImg.cols - 1.0) / 2.0, (image->cImg.rows - 1.0) / 2.0);
 
 	cv::Mat rot = cv::getRotationMatrix2D(center, angle, 1.0);
 	// Create bounding box
-	cv::Rect2f bbox = cv::RotatedRect(cv::Point2f(), image.cImg.size(), angle).boundingRect2f();
+	cv::Rect2f bbox = cv::RotatedRect(cv::Point2f(), image->cImg.size(), angle).boundingRect2f();
 	// adjust transformation matrix
-	rot.at<double>(0, 2) += bbox.width / 2.0 - image.cImg.cols / 2.0;
-	rot.at<double>(1, 2) += bbox.height / 2.0 - image.cImg.rows / 2.0;
+	rot.at<double>(0, 2) += bbox.width / 2.0 - image->cImg.cols / 2.0;
+	rot.at<double>(1, 2) += bbox.height / 2.0 - image->cImg.rows / 2.0;
 
-	cv::warpAffine(image.cImg, image.drawImg, rot, bbox.size());
-	image.createTexture();
+	cv::warpAffine(image->cImg, image->drawImg, rot, bbox.size());
+	image->createTexture();
 
 }
 
 void Application::traslateEvent() {
 	//in event class
 	cv::Mat trans_mat = (cv::Mat_<double>(2, 3) << 1, 0, translateX, 0, 1, translateY);
-	cv::warpAffine(image.cImg.clone(), image.drawImg, trans_mat, img.size());
-	image.createTexture();
+	cv::warpAffine(image->cImg.clone(), image->drawImg, trans_mat, img.size());
+	image->createTexture();
 
 }
 

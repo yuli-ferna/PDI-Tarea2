@@ -22,10 +22,10 @@ public:
 	void resetKernel();
 	cv::Mat getKernel();
 	cv::Mat getMorphMat();
-	void erode(Image &);
-	void dilate(Image &);
-	void morphOpen(Image &);
-	void morphClose(Image &);
-	void threshold(Image &);
-	void ecHistogram(Image& image);
+	void erode(Image *);
+	void dilate(Image *);
+	void morphOpen(Image *);
+	void morphClose(Image *);
+	void threshold(Image *);
+	void ecHistogram(Image * image);
 };

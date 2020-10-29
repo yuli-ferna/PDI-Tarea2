@@ -14,7 +14,8 @@ Image::Image(std::string p)
 	histTexture = -1;
 	blueHist = redHist = greenHist = true;
 	addHistory(oImg);
-	//calHistogram(drawImg);
+	createTexture();
+	calHistogram();
 
 	//createTexture();
 }
@@ -172,3 +173,4 @@ void Image::calHistogram()
 	//imshow("calcHist Demo", histogramImg);
 	setTexture(histTexture, histogramImg);
 }
+
