@@ -2,6 +2,7 @@
 
 #ifndef __ED_CLIENT_PCH__
 #define __ED_CLIENT_PCH__
+#define ARBITRARY 0
 
 #include <windows.h>
 #include <commdlg.h>

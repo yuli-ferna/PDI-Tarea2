@@ -91,10 +91,11 @@ void Application::MainLoop()
 	std::string path = "../examples/momo.jpg";
 	image = new Image(path);
 	event = Event();
-	
+	modalNameAct = "";
 	canvaWidth = 1370;
 	canvaHeight = 815;
 	
+	angle = 0;
 	translateX = 0;
 	translateY = 0;
 	while (!glfwWindowShouldClose(window))
@@ -152,8 +153,6 @@ void Application::ImGui()
 				if (newFile != "")
 				{
 					image = new Image(newFile);
-					image->createTexture();
-					image->calHistogram();
 					translateX = 0;
 					translateY = 0;
 				}
@@ -194,11 +193,11 @@ void Application::ImGui()
 	if(ImGui::SliderInt("Panning Left Y", &translateY, -image->drawImg.rows, image->drawImg.rows,"%d"))
 		traslateEvent();
 
-	ImGui::SliderFloat("Rotate", &image->rotation, 0.0f, 360.0f, "%.1f �");
-	//ImGui::SliderAngle("slider angle", &image->rotation);
-	if (ImGui::IsItemEdited()) {
-		rotationEvent(image->rotation);
-	}
+	//ImGui::SliderFloat("Rotate", &image->rotation, 0.0f, 360.0f, "%.1f �");
+	////ImGui::SliderAngle("slider angle", &image->rotation);
+	//if (ImGui::IsItemEdited()) {
+	//	rotationEvent(image->rotation);
+	//}
 	if (ImGui::CollapsingHeader("Threshold"))
 	{
 		ThresholdSection();
@@ -207,12 +206,51 @@ void Application::ImGui()
 	{
 		MorphologySection();
 	}
-	
+	if (ImGui::Button("Arbitrary rotation"))
+	{
+		modalNameAct = "Arbitrary rotation";
+
+	}
+	modal();
 
 	ImGui::End();
 }
 
+
 void Application::modal() {
+	if (modalNameAct != "") {
+		ImGui::OpenPopup(modalNameAct.c_str());
+	}
+	if (ImGui::BeginPopupModal("Arbitrary rotation", NULL, ImGuiWindowFlags_AlwaysAutoResize))
+	{
+		ImGui::Text("Angle: "); ImGui::SameLine();
+		
+		ImGui::InputFloat("", &event.angle, 0.1f, 1.f);
+		ImGui::RadioButton("CW", &event.cw, 1); ImGui::SameLine();
+		ImGui::RadioButton("CCW", &event.cw, 0);
+		ImGui::Separator();
+
+		//static int dummy_i = 0;
+		//ImGui::Combo("Combo", &dummy_i, "Delete\0Delete harder\0");
+
+		//static bool preview = false;
+		//ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0, 0));
+		//ImGui::Checkbox("Preview", &preview);
+		//ImGui::PopStyleVar();
+
+		if (ImGui::Button("OK", ImVec2(120, 0))) {
+			event.rotation(image, ARBITRARY);
+			modalNameAct = "";
+			ImGui::CloseCurrentPopup(); 
+		}
+		ImGui::SetItemDefaultFocus();
+		ImGui::SameLine();
+		if (ImGui::Button("Cancel", ImVec2(120, 0))) {
+			modalNameAct = "";
+			ImGui::CloseCurrentPopup();
+		}
+		ImGui::EndPopup();
+	}
 
 }
 
@@ -439,7 +477,7 @@ void Application::rotationEvent(double angle) {
 void Application::traslateEvent() {
 	//in event class
 	cv::Mat trans_mat = (cv::Mat_<double>(2, 3) << 1, 0, translateX, 0, 1, translateY);
-	cv::warpAffine(image->cImg.clone(), image->drawImg, trans_mat, img.size());
+	cv::warpAffine(image->cImg, image->drawImg, trans_mat, image->cImg.size());
 	image->createTexture();
 }
 

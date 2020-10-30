@@ -8,9 +8,11 @@ Event::Event()
 	kernel = std::vector<int>(64, 1);
 	structElem = 0;
 	morphMethod = 0;
+	angle = 0.0;
 	structElemSize = 1;
 	thresh = 170;
 	maxValue = 255;
+	cw = 1;
 }
 
 Event::~Event()
@@ -110,4 +112,35 @@ void Event::ecHistogram(Image* image)
 	cv::merge(bgr_mat, image->drawImg);
 	
 	image->addHistory(image->drawImg);
+}
+
+
+void Event::rotation(Image* image, int type) {
+
+	//in event class
+	//cv::resize(image->cImg, image->drawImg, cv::Size(), image->zoom, image->zoom);
+	if (type == ARBITRARY)
+	{
+		angle *= !cw ? -1.0 : 1.0;
+	}
+	cv::Point2f center = cv::Point2f((image->drawImg.cols - 1.0) / 2.0, (image->drawImg.rows - 1.0) / 2.0);
+
+	cv::Mat rot = cv::getRotationMatrix2D(center, angle, 1.0);
+	// Create bounding box
+	cv::Rect2f bbox = cv::RotatedRect(cv::Point2f(), image->drawImg.size(), angle).boundingRect2f();
+	// adjust transformation matrix
+	rot.at<double>(0, 2) += bbox.width / 2.0 - image->drawImg.cols / 2.0;
+	rot.at<double>(1, 2) += bbox.height / 2.0 - image->drawImg.rows / 2.0;
+
+	cv::warpAffine(image->drawImg, image->drawImg, rot, bbox.size());
+	//image->createTexture();
+	image->addHistory(image->drawImg);
+
+}
+
+void Event::traslate(Image* image, int translateX, int translateY) {
+	//in event class
+	cv::Mat trans_mat = (cv::Mat_<double>(2, 3) << 1, 0, translateX, 0, 1, translateY);
+	cv::warpAffine(image->cImg.clone(), image->drawImg, trans_mat, image->cImg.size());
+	image->createTexture();
 }

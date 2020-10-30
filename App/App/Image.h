@@ -22,7 +22,6 @@ public:
 	std::string path;
  	Image(std::string p = "");
 	~Image();
-	void createTextureHist();
 	void Load(std::string p);
 	void Save(std::string name);
 	void Undo();
