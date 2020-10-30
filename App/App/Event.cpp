@@ -13,6 +13,7 @@ Event::Event()
 	thresh = 170;
 	maxValue = 255;
 	cw = 1;
+	showPrev = false;
 }
 
 Event::~Event()
@@ -119,15 +120,16 @@ void Event::rotation(Image* image, int type) {
 
 	//in event class
 	//cv::resize(image->cImg, image->drawImg, cv::Size(), image->zoom, image->zoom);
+	int finalAngle = angle;
 	if (type == ARBITRARY)
 	{
-		angle *= !cw ? -1.0 : 1.0;
+		finalAngle *= (cw==1) ? -1.0 : 1.0;
 	}
 	cv::Point2f center = cv::Point2f((image->drawImg.cols - 1.0) / 2.0, (image->drawImg.rows - 1.0) / 2.0);
 
-	cv::Mat rot = cv::getRotationMatrix2D(center, angle, 1.0);
+	cv::Mat rot = cv::getRotationMatrix2D(center, finalAngle, 1.0);
 	// Create bounding box
-	cv::Rect2f bbox = cv::RotatedRect(cv::Point2f(), image->drawImg.size(), angle).boundingRect2f();
+	cv::Rect2f bbox = cv::RotatedRect(cv::Point2f(), image->drawImg.size(), finalAngle).boundingRect2f();
 	// adjust transformation matrix
 	rot.at<double>(0, 2) += bbox.width / 2.0 - image->drawImg.cols / 2.0;
 	rot.at<double>(1, 2) += bbox.height / 2.0 - image->drawImg.rows / 2.0;
@@ -138,9 +140,17 @@ void Event::rotation(Image* image, int type) {
 
 }
 
-void Event::traslate(Image* image, int translateX, int translateY) {
+void Event::traslate(Image* image, int translateX, int translateY, bool preview) {
 	//in event class
 	cv::Mat trans_mat = (cv::Mat_<double>(2, 3) << 1, 0, translateX, 0, 1, translateY);
-	cv::warpAffine(image->cImg.clone(), image->drawImg, trans_mat, image->cImg.size());
-	image->createTexture();
+	if (preview)
+	{
+		cv::warpAffine(image->drawImg, image->preview, trans_mat, image->drawImg.size());
+		image->createTexturePrev();
+	}
+	else {
+		cv::warpAffine(image->drawImg, image->drawImg, trans_mat, image->drawImg.size());
+		image->addHistory(image->drawImg);
+		showPrev = false;
+	}
 }

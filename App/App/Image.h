@@ -7,7 +7,7 @@ class Image
 {
 
 public:
-	cv::Mat oImg, cImg, drawImg;
+	cv::Mat oImg, preview, drawImg;
 	cv::Mat histogramImg;
 	cv::Point2f center;
 	bool showRedo, showUndo;
@@ -27,6 +27,7 @@ public:
 	void Undo();
 	void Redo();
 	void createTexture();
+	void createTexturePrev();
 	void setTexture(unsigned int& t, cv::Mat drawImg);
 	void addHistory(cv::Mat);
 	void calHistogram();

@@ -188,16 +188,6 @@ void Application::ImGui()
 	}
 	ImGui::SliderFloat("Zoom", &image->zoom, 0.1f, 3.0f);
 
-	if (ImGui::SliderInt("Panning Left X", &translateX, -image->drawImg.cols, image->drawImg.cols, "%d"))
-		traslateEvent();
-	if(ImGui::SliderInt("Panning Left Y", &translateY, -image->drawImg.rows, image->drawImg.rows,"%d"))
-		traslateEvent();
-
-	//ImGui::SliderFloat("Rotate", &image->rotation, 0.0f, 360.0f, "%.1f �");
-	////ImGui::SliderAngle("slider angle", &image->rotation);
-	//if (ImGui::IsItemEdited()) {
-	//	rotationEvent(image->rotation);
-	//}
 	if (ImGui::CollapsingHeader("Threshold"))
 	{
 		ThresholdSection();
@@ -209,6 +199,12 @@ void Application::ImGui()
 	if (ImGui::Button("Arbitrary rotation"))
 	{
 		modalNameAct = "Arbitrary rotation";
+
+	}
+
+	if (ImGui::Button("Traslate image"))
+	{
+		modalNameAct = "Traslate image";
 
 	}
 	modal();
@@ -223,21 +219,14 @@ void Application::modal() {
 	}
 	if (ImGui::BeginPopupModal("Arbitrary rotation", NULL, ImGuiWindowFlags_AlwaysAutoResize))
 	{
+		//ImGui::SetWindowPos(ImVec2(canvaWidth + 30, 350));
 		ImGui::Text("Angle: "); ImGui::SameLine();
 		
 		ImGui::InputFloat("", &event.angle, 0.1f, 1.f);
 		ImGui::RadioButton("CW", &event.cw, 1); ImGui::SameLine();
 		ImGui::RadioButton("CCW", &event.cw, 0);
 		ImGui::Separator();
-
-		//static int dummy_i = 0;
-		//ImGui::Combo("Combo", &dummy_i, "Delete\0Delete harder\0");
-
-		//static bool preview = false;
-		//ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0, 0));
-		//ImGui::Checkbox("Preview", &preview);
-		//ImGui::PopStyleVar();
-
+		
 		if (ImGui::Button("OK", ImVec2(120, 0))) {
 			event.rotation(image, ARBITRARY);
 			modalNameAct = "";
@@ -247,6 +236,53 @@ void Application::modal() {
 		ImGui::SameLine();
 		if (ImGui::Button("Cancel", ImVec2(120, 0))) {
 			modalNameAct = "";
+			ImGui::CloseCurrentPopup();
+		}
+		ImGui::EndPopup();
+	}
+
+	if (ImGui::BeginPopupModal("Traslate image", NULL, ImGuiWindowFlags_AlwaysAutoResize))
+	{
+		//ImGui::SetWindowPos(ImVec2(canvaWidth + 30, 350));
+
+
+		if (ImGui::SliderInt("Panning Left X", &translateX, -image->drawImg.cols, image->drawImg.cols, "%d")) {
+			if(event.showPrev)
+				event.traslate(image, translateX, translateY, true);
+		}
+		if (ImGui::SliderInt("Panning Left Y", &translateY, -image->drawImg.rows, image->drawImg.rows, "%d")) {
+			if(event.showPrev)
+				event.traslate(image, translateX, translateY, true);
+		}
+
+
+		ImGui::Separator();
+		
+		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0, 0));
+		if (ImGui::Checkbox("Preview", &event.showPrev))
+		{
+			if (event.showPrev)
+			{
+				event.traslate(image, translateX, translateY, true);
+			}
+			else
+			{
+				image->createTexture();
+			}
+		}
+		ImGui::PopStyleVar();
+		
+		if (ImGui::Button("OK", ImVec2(120, 0))) {
+			event.traslate(image, translateX, translateY);
+			modalNameAct = "";
+			ImGui::CloseCurrentPopup();
+		}
+		ImGui::SetItemDefaultFocus();
+		ImGui::SameLine();
+		if (ImGui::Button("Cancel", ImVec2(120, 0))) {
+			modalNameAct = "";
+			event.showPrev = false;
+			image->createTexture();
 			ImGui::CloseCurrentPopup();
 		}
 		ImGui::EndPopup();
@@ -454,31 +490,6 @@ void Application::processKeyboardInput(GLFWwindow* window) {
 		// Tells glfw to close the window as soon as possible
 		glfwSetWindowShouldClose(window, true);
 	}
-}
-
-void Application::rotationEvent(double angle) {
-	
-	//in event class
-	//cv::resize(image->cImg, image->drawImg, cv::Size(), image->zoom, image->zoom);
-	cv::Point2f center = cv::Point2f((image->cImg.cols - 1.0) / 2.0, (image->cImg.rows - 1.0) / 2.0);
-
-	cv::Mat rot = cv::getRotationMatrix2D(center, angle, 1.0);
-	// Create bounding box
-	cv::Rect2f bbox = cv::RotatedRect(cv::Point2f(), image->cImg.size(), angle).boundingRect2f();
-	// adjust transformation matrix
-	rot.at<double>(0, 2) += bbox.width / 2.0 - image->cImg.cols / 2.0;
-	rot.at<double>(1, 2) += bbox.height / 2.0 - image->cImg.rows / 2.0;
-
-	cv::warpAffine(image->cImg, image->drawImg, rot, bbox.size());
-	image->createTexture();
-
-}
-
-void Application::traslateEvent() {
-	//in event class
-	cv::Mat trans_mat = (cv::Mat_<double>(2, 3) << 1, 0, translateX, 0, 1, translateY);
-	cv::warpAffine(image->cImg, image->drawImg, trans_mat, image->cImg.size());
-	image->createTexture();
 }
 
 std::string Application::loadPath(bool open)
