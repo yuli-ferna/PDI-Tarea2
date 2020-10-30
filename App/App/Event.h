@@ -13,6 +13,7 @@ public:
 	int col;
 	int structElem;
 	int structElemSize;
+	int morphMethod;
 	double thresh;
 	double maxValue;
 	int typeThresh;

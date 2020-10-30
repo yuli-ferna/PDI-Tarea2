@@ -14,8 +14,6 @@ Image::Image(std::string p)
 	histTexture = -1;
 	blueHist = redHist = greenHist = true;
 	addHistory(oImg);
-	
-	//createTexture();
 }
 
 Image::~Image()

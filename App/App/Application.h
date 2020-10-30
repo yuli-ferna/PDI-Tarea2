@@ -20,6 +20,7 @@ class Application
 	cv::Mat img,img2;
 	int translateX, translateY;
 	Image *image;
+	std::string modalNameAct;
 	Event event;
 	bool p_open;
 

@@ -79,6 +79,7 @@ Application::~Application() {
 	glfwDestroyWindow(window);
 	glfwTerminate();
 
+	delete image;
 	//delete img;
 	//delete composite;
 	//delete bw;
@@ -90,10 +91,10 @@ void Application::MainLoop()
 	std::string path = "../examples/momo.jpg";
 	image = new Image(path);
 	event = Event();
-	/*image->createTexture();
-	image->calHistogram();*/
-	//image->createTextureHist();
-
+	
+	canvaWidth = 1370;
+	canvaHeight = 815;
+	
 	translateX = 0;
 	translateY = 0;
 	while (!glfwWindowShouldClose(window))
@@ -113,17 +114,16 @@ void Application::MainLoop()
 		
 		// Your code here
 
-		if (show_demo_window)
-			ImGui::ShowDemoWindow(&show_demo_window);
-
 		// ImGui
 		UI();
+		if (show_demo_window)
+			ImGui::ShowDemoWindow(&show_demo_window);
 
 		// Rendering
 		ImGui::Render();
 		Render();
 
-
+		
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
 		glfwSwapBuffers(window);
@@ -199,15 +199,15 @@ void Application::ImGui()
 	if (ImGui::IsItemEdited()) {
 		rotationEvent(image->rotation);
 	}
-
-	if (ImGui::CollapsingHeader("Morphology"))
-	{
-		MorphologySection();
-	}
 	if (ImGui::CollapsingHeader("Threshold"))
 	{
 		ThresholdSection();
 	}
+	if (ImGui::CollapsingHeader("Morphology"))
+	{
+		MorphologySection();
+	}
+	
 
 	ImGui::End();
 }
@@ -218,10 +218,7 @@ void Application::modal() {
 
 void Application::ThresholdSection() 
 {
-	const double f64_zero = 0.;
-	const double f64_one = 1.;
-	const ImU8 u8_min = 0;
-	const ImU8 u8_max = 255;
+
 	ImGui::Text("Methods:");
 	ImGui::Combo("", &event.typeThresh, "OTSU\0TOZERO INV\0TOZERO\0\0");
 	ImGui::InputDouble("Thresh", &event.thresh, 1.f, 1.f, "%.0f");
@@ -254,23 +251,12 @@ void Application::ThresholdSection()
 void Application::MorphologySection() {
 	
 	ImGui::Text("Actions:");
+	ImGui::RadioButton("Erode", &event.morphMethod, 0); ImGui::SameLine();
+	ImGui::RadioButton("Dilate", &event.morphMethod, 1); ImGui::SameLine();
+	ImGui::RadioButton("Open", &event.morphMethod, 2); ImGui::SameLine();
+	ImGui::RadioButton("Close", &event.morphMethod, 3);
 
-	if (ImGui::Button("Erode")) {
-		event.erode(image);
-	}
-	ImGui::SameLine();
-	if (ImGui::Button("Dilate")) {
-		event.dilate(image);
-	}
-	ImGui::SameLine();
-	if (ImGui::Button("Open")) {
-		event.morphOpen(image);
-	}
-	ImGui::SameLine();
-	if (ImGui::Button("Close")) {
-		event.morphClose(image);
-	}
-
+	ImGui::Separator();
 
 	ImGui::Text("Structuring Element Type:");
 	ImGui::RadioButton("MORPH_RECT", &event.structElem, 0); ImGui::SameLine();
@@ -283,13 +269,40 @@ void Application::MorphologySection() {
 	{
 		KernellView(event.kernel, event.col, event.row);
 	} else {
-		ImGui::Text("Kernel size(2n + 1):"); ImGui::SameLine();
-		ImGui::SetNextItemWidth(ImGui::GetFontSize() * 8);
-		if (ImGui::InputInt("", &event.structElemSize)) {
+		//ImGui::Text("Kernel size(2n + 1):"); ImGui::SameLine();
+		/*ImGui::SetNextItemWidth(ImGui::GetFontSize() * 8);*/
+		if (ImGui::InputInt("Kernel size(2n + 1)", &event.structElemSize)) {
 			if (event.structElemSize < 1)
 			{
 				event.structElemSize = 1;
 			}
+		}
+	}
+
+	if (ImGui::Button("Apply"))
+	{
+		std::cout << event.morphMethod << std::endl;
+		switch (event.morphMethod)
+		{
+			case 0:
+				std::cout << "erode" << std::endl;
+				event.erode(image);
+				break;
+			case 1:
+				std::cout << "dilate" << std::endl;
+				event.dilate(image);
+				break;
+			case 2:
+				std::cout << "morphOpen" << std::endl;
+
+				event.morphOpen(image);
+				break;
+			case 3:
+				std::cout << "morphClose" << std::endl;
+				event.morphClose(image);
+				break;
+			default:
+				break;
 		}
 	}
 }
@@ -306,7 +319,7 @@ void Application::Histogram() {
 }
 
 void Application::KernellView(std::vector<int> &arr, int &columns_count, int& lines_count) {
-	ImGui::SetNextItemOpen(true);
+	//ImGui::SetNextItemOpen(true);
 	if (ImGui::TreeNode("Kernel"))
 	{
 		
@@ -369,14 +382,9 @@ void Application::ImageVisor()
 	ImGui::PopItemFlag();
 	ImGui::PopStyleVar();
 	
-	/*if (!image->showUndo && !image->showRedo)
-	{
-		ImGui::Dummy(ImVec2(0.0f, 20.0f));
-	}*/
-
 	ImGui::Separator();
 
-	ImGui::BeginChildFrame(ImGui::GetID("Image"), ImVec2(1024, 815), ImGuiWindowFlags_HorizontalScrollbar);
+	ImGui::BeginChildFrame(ImGui::GetID("Image"), ImVec2(canvaWidth, canvaHeight), ImGuiWindowFlags_HorizontalScrollbar);
 	ImGui::Image((void*)(intptr_t)image->texture, ImVec2(drawCols * image->zoom, drawRows * image->zoom));
 	ImGui::EndChildFrame();
 
@@ -433,7 +441,6 @@ void Application::traslateEvent() {
 	cv::Mat trans_mat = (cv::Mat_<double>(2, 3) << 1, 0, translateX, 0, 1, translateY);
 	cv::warpAffine(image->cImg.clone(), image->drawImg, trans_mat, img.size());
 	image->createTexture();
-
 }
 
 std::string Application::loadPath(bool open)
