@@ -146,24 +146,25 @@ void Image::calHistogram()
 	normalize(b_hist, b_hist, 0, histogramImg.rows, cv::NORM_MINMAX, -1, cv::Mat());
 	normalize(g_hist, g_hist, 0, histogramImg.rows, cv::NORM_MINMAX, -1, cv::Mat());
 	normalize(r_hist, r_hist, 0, histogramImg.rows, cv::NORM_MINMAX, -1, cv::Mat());
-	for (int i = 1; i < histSize; i++)
+	for (int i = 0; i < histSize; i++)
 	{
 		if (blueHist)
 		{
-			line(histogramImg, cv::Point(bin_w * (i - 1), hist_h - cvRound(b_hist.at<float>(i - 1))),
+
+			line(histogramImg, cv::Point(bin_w * i, hist_h),
 				cv::Point(bin_w * (i), hist_h - cvRound(b_hist.at<float>(i))),
 				cv::Scalar(255, 0, 0), 2, cv::FILLED, 0);
 
 		}
 		if (greenHist)
 		{
-			line(histogramImg, cv::Point(bin_w * (i - 1), hist_h - cvRound(g_hist.at<float>(i - 1))),
+			line(histogramImg, cv::Point(bin_w * i , hist_h),
 				cv::Point(bin_w * (i), hist_h - cvRound(g_hist.at<float>(i))),
 				cv::Scalar(0, 255, 0), 2, cv::FILLED, 0);
 		}
 		if (redHist)
 		{
-			line(histogramImg, cv::Point(bin_w * (i - 1), hist_h - cvRound(r_hist.at<float>(i - 1))),
+			line(histogramImg, cv::Point(bin_w * i, hist_h),
 				cv::Point(bin_w * (i), hist_h - cvRound(r_hist.at<float>(i))),
 				cv::Scalar(0, 0, 255), 2, cv::FILLED, 0);
 
