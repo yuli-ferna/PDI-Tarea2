@@ -14,14 +14,14 @@ class Application
 	int canvaWidth, canvaHeight;
 	bool show_demo_window = true;
 
-	int lowThreshold = 7, highThreshold = 50;
 	unsigned int cols, rows;
-	cv::Vec2d mouse;
-	cv::Mat img,img2;
 	int translateX, translateY;
-	Image *image;
-	std::string modalNameAct;
+	float angle;
+	cv::Vec2d mouse;
+
+	Image *image;	
 	Event event;
+	std::string modalNameAct;
 	bool p_open;
 
 public:

@@ -9,14 +9,17 @@ class Event
 	//Image image;
 	
 public:
+	bool showPrev;
 	int row;
 	int col;
 	int structElem;
 	int structElemSize;
 	int morphMethod;
+	int typeThresh;
+	int cw;
 	double thresh;
 	double maxValue;
-	int typeThresh;
+	float angle;
 	std::vector<int> kernel;
 	Event();
 	~Event();
@@ -29,4 +32,8 @@ public:
 	void morphClose(Image *);
 	void threshold(Image *);
 	void ecHistogram(Image * image);
+	void rotation(Image* image);
+	void rotation(Image* image, float angle);
+	void rotation(Image* image, int type);
+	void traslate(Image* image, int translateX, int translateY, bool preview = false);
 };

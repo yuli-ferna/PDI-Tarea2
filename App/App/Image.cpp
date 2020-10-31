@@ -4,9 +4,9 @@ Image::Image(std::string p)
 {
 	path = p;
 	oImg = cv::imread(p);
-	cImg = oImg.clone();
+	preview = oImg.clone();
 	drawImg = oImg.clone();
-	center = cv::Point2f((cImg.cols - 1.0) / 2.0, (cImg.rows - 1.0) / 2.0);
+	center = cv::Point2f((preview.cols - 1.0) / 2.0, (preview.rows - 1.0) / 2.0);
 	rotation = 0.0;
 	zoom = 1.0;
 	showRedo = showUndo = false;
@@ -34,6 +34,11 @@ void Image::createTexture()
 	setTexture(texture, drawImg);
 }
 
+void Image::createTexturePrev()
+{
+	setTexture(texture, preview);
+}
+
 void Image::setTexture(unsigned int& t, cv::Mat drawImg)
 {
 	if (t != -1)
@@ -53,9 +58,9 @@ void Image::setTexture(unsigned int& t, cv::Mat drawImg)
 
 void Image::Load(std::string p)
 {
-	//oImg = cImg = drawImg = cv::imread(p);
+	//oImg = preview = drawImg = cv::imread(p);
 	oImg = cv::imread(p);
-	oImg.copyTo(cImg);
+	oImg.copyTo(preview);
 	oImg.copyTo(drawImg);
 }
 
