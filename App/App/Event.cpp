@@ -225,12 +225,23 @@ void Event::fillImage(Image* image, cv::Vec2i seed , float fillColor[], bool fil
 
 void Event::kMeans(Image* image, int k) 
 {
-	cv::Mat data, labels;
-	cv::Mat centers(8, 1, CV_32FC1);
-	image->drawImg.convertTo(data,CV_32F);
-	cv::kmeans(data, k, labels, cv::TermCriteria(), 3, cv::KMEANS_PP_CENTERS, centers);
-	imshow("posterized hue", data);
+	std::vector<int> labels;
+	cv::Mat1f centers(8, 1, CV_32FC1);
+    int n = image->drawImg.rows * image->drawImg.cols;
+	cv::Mat data = image->drawImg.reshape(1, n);
 
-	data.convertTo(image->drawImg, CV_32FC3);
+	data.convertTo(data,CV_32F);
+	cv::kmeans(data, k, labels, cv::TermCriteria(), 3, cv::KMEANS_PP_CENTERS, centers);
+
+	for (int i = 0; i < n; ++i)
+	{
+		data.at<float>(i, 0) = centers(labels[i], 0);
+		data.at<float>(i, 1) = centers(labels[i], 1);
+		data.at<float>(i, 2) = centers(labels[i], 2);
+	}
+
+	cv::Mat result = data.reshape(3, image->drawImg.rows);
+	result.convertTo(image->drawImg, CV_8U);
+	image->addHistory(image->drawImg);
 
 }
