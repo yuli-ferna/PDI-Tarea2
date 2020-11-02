@@ -14,6 +14,7 @@ Event::Event()
 	maxValue = 255;
 	cw = 1;
 	showPrev = false;
+	Ncolors = 1;
 }
 
 Event::~Event()
@@ -153,4 +154,47 @@ void Event::traslate(Image* image, int translateX, int translateY, bool preview)
 		image->addHistory(image->drawImg);
 		showPrev = false;
 	}
+}
+
+
+void Event::uniformQuantization(Image* image) {
+	//round(img*(N/255))*(255/N);
+	//Calculate the posible values with the new range
+	int table[256];
+	for (int i = 0; i < 256; ++i)
+	table[i] = (int)(Ncolors * (i / Ncolors));
+		//table[i] = (uchar)((255/Ncolors) * round(i * (255/ Ncolors)));
+	std::vector<cv::Mat> bgr_mat;
+	cv::split(image->drawImg, bgr_mat);
+
+	const int channels = image->drawImg.channels();
+	switch (channels)
+	{
+	case 1:
+	{
+		cv::MatIterator_<uchar> it, end;
+		for (it = image->drawImg.begin<uchar>(), end = image->drawImg.end<uchar>(); it != end; ++it)
+			*it = table[*it];
+		break;
+	}
+	case 3:
+	{
+		cv::MatIterator_<cv::Vec3b> it, end;
+		for (it = image->drawImg.begin<cv::Vec3b>(), end = image->drawImg.end<cv::Vec3b>(); it != end; ++it)
+		{
+			/*(*it)[0] = table[(*it)[0]];
+			(*it)[1] = table[(*it)[1]];
+			(*it)[2] = table[(*it)[2]];
+			*/
+			(*it)[0] = round((*it)[0] * (Ncolors / 255.0)) * (255.0 / Ncolors);
+			(*it)[1] = round((*it)[1] * (Ncolors / 255.0)) * (255.0 / Ncolors);
+			(*it)[2] = round((*it)[2] * (Ncolors / 255.0)) * (255.0 / Ncolors);
+
+		}
+	}
+	}
+
+	image->addHistory(image->drawImg);
+
+
 }

@@ -207,6 +207,11 @@ void Application::ImGui()
 		modalNameAct = "Traslate image";
 
 	}
+	if (ImGui::Button("uniformQuantization"))
+	{
+		event.uniformQuantization(image);
+	}
+
 	modal();
 
 	ImGui::End();
