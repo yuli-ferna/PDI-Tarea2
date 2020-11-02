@@ -18,12 +18,13 @@ para poder correr el proyecto debes seguir los siguientes pasos
 
 
 * Cuantización/Reducción de colores de una imagen de 24 bits con al menos tres (3) métodos. Por ejemplo: reducción de bits por pixel, conversión a paleta (Popularity Algorithm, Median Cut), k-media, entre otros.
+* En reducción de bits damos la opcion mediante un select con la cantidad de bits que se quieren reducir de la imagen (de 1 a 7 bits), esto se hace haciendo una mascara de bits desplazando la cantidad de bits que se quieren reducir. 
 * En umbralización automática tenemos OTSU y To zero inv (THRESH_TOZERO_INV). En el caso de umbralización to zero, cuando el valor del pixel es mayor a la del umbral se mantiene el mismo gris de la imagen original, mientras que cuando el valor del pixel es menor al umbral se asigna 0 (negro). Para nuestro proyecto elegimos la version invertida, ya que visualmente se aprecian mejor los objetos separados del fondo.
 * Ecualización del Histograma. Aplicamos la funcion de opencv equalizeHist, en cada canal de la imagen (usando split) y despues usamos merge para unirlos y ese es el resultado que se muestra en pantalla.
 * Morfología (Erosión, dilatación, apertura y cierre). El usuario puede elegir el tipo de elemento estructurante que desee (tenemos las opciones de: Morph_rect, Morph_cross o Morph_ellipse) junto con un n para el tamaño del kernel que viene dado en (2n + 1). Y también puede dar un kernel arbitrario, elegir cantidad de filas y columnas, y poner el valor de cada una de las casillas.
-* Crecimiento de regiones con opción para escoger rango fijo o flotante, además de vecindad a 4 u 8.
+* En crecimiento de regiones tenemos dos checkbox, uno que dice "Vecindad de 8" en caso de no estar activo la vecindad sería de 4, y el segundo dice "Rango Flotante" que de no estar seleccionado el rango sería fijo. El color en que se quiere la región, se elige la posición en X y Y del pixel donde estaría la seed.
 * Aplicación de la Transformada de Fourier para obtener la imagen de Magnitud (Centrada o de Espectro). Luego proveer la opción para aplicar algún filtro paso bajo en el Dominio Frecuencial y aplicar la Transformada de Fourier Inversa para ver el resultado en el Dominio Espacial.
 * Nuestro historial se basa en dos listas que contendrán las imagenes (guardar hasta 4 cambios).
-* Traslado (Panning) de la imagen en cualquier dirección.
-* Rotación en ángulo arbitrario (Clockwise y Anticlockwise).
-* Zoom nos ayudamos de los parametros de imgui con una textura con los siguientes parametros:
+* Traslado (Panning) de la imagen en cualquier dirección, esto se hace medianteuas barras, la interfaz te permitirá ver una vista previa antes de hacer la operación.
+* Rotación en ángulo arbitrario (Clockwise y Anticlockwise). Saldrá un modal con un input para colocar los grados que se quieran rotar y unos radio buttons para seleccionar si se rota clockwise o anticlockwise.
+* Zoom nos ayudamos de los parametros de imgui con una textura con los siguientes parametros: GL_TEXTURE_MIN_FILTER y GL_TEXTURE_MAG_FILTER.

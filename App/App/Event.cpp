@@ -165,10 +165,11 @@ void Event::bitReduction(Image* image) {
 	uchar mask = 0xFF << n;
 	int div = pow(2, n);
 		
-	float table[256];
+	float newColor[256];
 	// Haciendo esta operacion se descartarian los bits que no se requieren
 	for (int i = 0; i < 256; ++i)
-		table[i] = (i & mask) + div / 2;
+		newColor[i] = (i & mask) + div / 2;
+	//newColor[i] = (i & mask);
 
 	std::vector<cv::Mat> bgr_mat;
 	cv::split(image->drawImg, bgr_mat);
@@ -180,7 +181,7 @@ void Event::bitReduction(Image* image) {
 	{
 		cv::MatIterator_<uchar> it, end;
 		for (it = image->drawImg.begin<uchar>(), end = image->drawImg.end<uchar>(); it != end; ++it)
-			*it = table[*it];
+			*it = newColor[*it];
 		break;
 	}
 	case 3:
@@ -188,9 +189,9 @@ void Event::bitReduction(Image* image) {
 		cv::MatIterator_<cv::Vec3b> it, end;
 		for (it = image->drawImg.begin<cv::Vec3b>(), end = image->drawImg.end<cv::Vec3b>(); it != end; ++it)
 		{
-			(*it)[0] = table[(*it)[0]];
-			(*it)[1] = table[(*it)[1]];
-			(*it)[2] = table[(*it)[2]];
+			(*it)[0] = newColor[(*it)[0]];
+			(*it)[1] = newColor[(*it)[1]];
+			(*it)[2] = newColor[(*it)[2]];
 			
 		}
 	}
