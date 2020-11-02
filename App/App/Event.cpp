@@ -14,7 +14,8 @@ Event::Event()
 	maxValue = 255;
 	cw = 1;
 	showPrev = false;
-	Ncolors = 10;
+	Ncolors = 16;
+	nBits = 4;
 }
 
 Event::~Event()
@@ -157,13 +158,18 @@ void Event::traslate(Image* image, int translateX, int translateY, bool preview)
 }
 
 
-void Event::uniformQuantization(Image* image) {
-	//round(img*(N/255))*(255/N);
-	//Calculate the posible values with the new range
+void Event::bitReduction(Image* image) {
+
+	// mask used to round the pixel value
+	int n = nBits + 1;
+	uchar mask = 0xFF << n;
+	int div = pow(2, n);
+		
 	float table[256];
+	// Haciendo esta operacion se descartarian los bits que no se requieren
 	for (int i = 0; i < 256; ++i)
-		table[i] = round(i * (Ncolors / 255.0))* (255.0 / Ncolors);
-	//table[i] = ((float)Ncolors * (i / (float)Ncolors));
+		table[i] = (i & mask) + div / 2;
+
 	std::vector<cv::Mat> bgr_mat;
 	cv::split(image->drawImg, bgr_mat);
 
@@ -223,6 +229,7 @@ void Event::kMeans(Image* image, int k)
 	image->drawImg.convertTo(data,CV_32F);
 	cv::kmeans(data, k, labels, cv::TermCriteria(), 3, cv::KMEANS_PP_CENTERS, centers);
 	imshow("posterized hue", data);
+
 	data.convertTo(image->drawImg, CV_32FC3);
 
 }

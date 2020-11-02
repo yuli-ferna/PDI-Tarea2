@@ -18,6 +18,7 @@ public:
 	int typeThresh;
 	int cw;
 	int Ncolors;
+	int nBits;
 	double thresh;
 	double maxValue;
 	float angle;
@@ -35,7 +36,7 @@ public:
 	void ecHistogram(Image * image);
 	void rotation(Image* image, int type);
 	void traslate(Image* image, int translateX, int translateY, bool preview = false);
-	void uniformQuantization(Image* image);
+	void bitReduction(Image* image);
 
 	void fillImage(Image* image, cv::Vec2i seed, float fillColor[], bool fillType, bool rageType, int loDiff, int upDiff);
 	void kMeans(Image* image, int k);

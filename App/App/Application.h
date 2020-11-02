@@ -37,6 +37,7 @@ public:
 	void Render();
 	void UI();
 	void ImGui();
+	void bitReduction();
 	void fill();
 	void modal();
 	void ThresholdSection();

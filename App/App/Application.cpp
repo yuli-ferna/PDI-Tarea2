@@ -88,7 +88,7 @@ Application::~Application() {
 
 void Application::MainLoop()
 {	
-	std::string path = "../examples/momo.jpg";
+	std::string path = "../examples/paisaje.jpg";
 	image = new Image(path);
 	event = Event();
 	modalNameAct = "";
@@ -220,19 +220,30 @@ void Application::ImGui()
 		fill();
 	}
 	
+	if (ImGui::CollapsingHeader("Bit reduction"))
+	{
+		bitReduction();
+		
+	}
 	if (ImGui::Button("Kmins"))
 	{
 		event.kMeans(image,5);
 
 	}
-	if (ImGui::Button("uniformQuantization"))
-	{
-		event.uniformQuantization(image);
-	}
 
 	modal();
 
 	ImGui::End();
+}
+
+void Application::bitReduction() {
+	ImGui::Text("How much bits do you want reduce?");
+	ImGui::Combo("", &event.nBits, " 1 bit\0 2 bits\0 3 bits\0 4 bits \0 5 bits\0 6 bits\0 7 bits\0\0");
+	if (ImGui::Button("Apply"))
+	{
+		event.bitReduction(image);
+	}
+
 }
 
 void Application::fill() {
