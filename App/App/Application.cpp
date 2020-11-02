@@ -231,6 +231,11 @@ void Application::ImGui()
 
 	}
 
+	if (ImGui::Button("fourierTransform"))
+	{
+		event.fourierTransform(image);
+	}
+
 	modal();
 
 	ImGui::End();
