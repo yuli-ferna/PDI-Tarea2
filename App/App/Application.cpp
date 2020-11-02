@@ -94,10 +94,13 @@ void Application::MainLoop()
 	modalNameAct = "";
 	canvaWidth = 1370;
 	canvaHeight = 815;
-	
 	angle = 0;
 	translateX = 0;
 	translateY = 0;
+	seed[0] = seed[1] = 0;
+	rangeType = fillType = true;
+	fillLoDiff = fillUpDiff = 20;
+
 	while (!glfwWindowShouldClose(window))
 	{
 		glfwGetFramebufferSize(window, &windowWidth, &windowHeight);
@@ -186,6 +189,22 @@ void Application::ImGui()
 	if (ImGui::Button("Equalize Histogram")) {
 		event.ecHistogram(image);
 	}
+	ImGui::Separator();
+	
+	if (ImGui::Button("Arbitrary rotation"))
+	{
+		modalNameAct = "Arbitrary rotation";
+
+	}
+	ImGui::SameLine();
+	if (ImGui::Button("Traslate image"))
+	{
+		modalNameAct = "Traslate image";
+
+	}
+	
+	ImGui::Separator();
+
 	ImGui::SliderFloat("Zoom", &image->zoom, 0.1f, 3.0f);
 
 	if (ImGui::CollapsingHeader("Threshold"))
@@ -196,15 +215,14 @@ void Application::ImGui()
 	{
 		MorphologySection();
 	}
-	if (ImGui::Button("Arbitrary rotation"))
+	if (ImGui::CollapsingHeader("Fill")) 
 	{
-		modalNameAct = "Arbitrary rotation";
-
+		fill();
 	}
-
-	if (ImGui::Button("Traslate image"))
+	
+	if (ImGui::Button("Kmins"))
 	{
-		modalNameAct = "Traslate image";
+		event.kMeans(image,5);
 
 	}
 	if (ImGui::Button("uniformQuantization"))
@@ -217,6 +235,26 @@ void Application::ImGui()
 	ImGui::End();
 }
 
+void Application::fill() {
+
+	ImGui::Checkbox("Vencidad De 8", &fillType);
+	ImGui::SameLine();
+	ImGui::Checkbox("Rango Flotante", &rangeType);
+	ImGui::ColorEdit3("Select Fill Color", fillColor);
+
+	ImGui::Separator();
+	ImGui::SliderInt("Seed Pos X", &seed[0], 0, image->drawImg.cols - 1);
+	ImGui::SliderInt("Seed Pos Y", &seed[1], 0, image->drawImg.rows - 1);
+	ImGui::Separator();
+
+	if(ImGui::InputInt("Fill Low Diff", &fillLoDiff, 1, 100)) fillLoDiff < 0 ? fillLoDiff = 0 : fillLoDiff = fillLoDiff;
+	if(ImGui::InputInt("Fill Up Diff", &fillUpDiff, 1, 100)) fillUpDiff < 0 ? fillUpDiff = 0: fillUpDiff = fillUpDiff;
+
+	if ((ImGui::Button("fill"))) {
+
+		event.fillImage(image,seed,fillColor, fillType,rangeType, fillLoDiff, fillUpDiff);
+	}
+}
 
 void Application::modal() {
 	if (modalNameAct != "") {

@@ -17,12 +17,14 @@ class Application
 	unsigned int cols, rows;
 	int translateX, translateY;
 	float angle;
+	float fillColor[3] = { 1.0f,0.0f,0.2f };
 	cv::Vec2d mouse;
-
+	cv::Vec2i seed;
+	int fillLoDiff, fillUpDiff;
 	Image *image;	
 	Event event;
 	std::string modalNameAct;
-	bool p_open;
+	bool p_open,fillType,rangeType;
 
 public:
 	std::vector<int> arr;
@@ -35,6 +37,7 @@ public:
 	void Render();
 	void UI();
 	void ImGui();
+	void fill();
 	void modal();
 	void ThresholdSection();
 	void MorphologySection();

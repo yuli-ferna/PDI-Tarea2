@@ -162,7 +162,7 @@ void Event::uniformQuantization(Image* image) {
 	//Calculate the posible values with the new range
 	int table[256];
 	for (int i = 0; i < 256; ++i)
-	table[i] = (int)(Ncolors * (i / Ncolors));
+	table[i] = (int)(Ncolors * ((float)i / Ncolors));
 		//table[i] = (uchar)((255/Ncolors) * round(i * (255/ Ncolors)));
 	std::vector<cv::Mat> bgr_mat;
 	cv::split(image->drawImg, bgr_mat);
@@ -182,19 +182,51 @@ void Event::uniformQuantization(Image* image) {
 		cv::MatIterator_<cv::Vec3b> it, end;
 		for (it = image->drawImg.begin<cv::Vec3b>(), end = image->drawImg.end<cv::Vec3b>(); it != end; ++it)
 		{
-			/*(*it)[0] = table[(*it)[0]];
+			(*it)[0] = table[(*it)[0]];
 			(*it)[1] = table[(*it)[1]];
 			(*it)[2] = table[(*it)[2]];
-			*/
-			(*it)[0] = round((*it)[0] * (Ncolors / 255.0)) * (255.0 / Ncolors);
-			(*it)[1] = round((*it)[1] * (Ncolors / 255.0)) * (255.0 / Ncolors);
-			(*it)[2] = round((*it)[2] * (Ncolors / 255.0)) * (255.0 / Ncolors);
+			
+			//(*it)[0] = round((*it)[0] * (Ncolors / 255.0)) * (255.0 / Ncolors);
+			//(*it)[1] = round((*it)[1] * (Ncolors / 255.0)) * (255.0 / Ncolors);
+			//(*it)[2] = round((*it)[2] * (Ncolors / 255.0)) * (255.0 / Ncolors);
 
 		}
 	}
 	}
 
 	image->addHistory(image->drawImg);
+}
 
+// fillType false es para vencidad de 4 y true para vencidad de 8
+// rangeType false para rango fijo true rango flotante 
+
+void Event::fillImage(Image* image, cv::Vec2i seed , float fillColor[], bool fillType, bool rageType, int loDiff, int upDiff)
+{	
+	int flags = 4;
+	uchar fillValue;
+
+	if (fillType)
+		flags += 255 << 8;
+	else
+		flags += 128 << 4;
+
+	if (rageType)
+		flags += cv::FLOODFILL_FIXED_RANGE;
+
+	cv::floodFill(image->drawImg, seed,cv::Scalar(fillColor[2]*255, fillColor[1]*255, fillColor[0]*255),0, cv::Scalar(loDiff, loDiff, loDiff), cv::Scalar(upDiff, upDiff, upDiff), flags);
+	
+
+	image->addHistory(image->drawImg);
+
+}
+
+void Event::kMeans(Image* image, int k) 
+{
+	cv::Mat data, labels;
+	cv::Mat centers(8, 1, CV_32FC1);
+	image->drawImg.convertTo(data,CV_32F);
+	cv::kmeans(data, k, labels, cv::TermCriteria(), 3, cv::KMEANS_PP_CENTERS, centers);
+	imshow("posterized hue", data);
+	data.convertTo(image->drawImg, CV_32FC3);
 
 }
