@@ -220,6 +220,11 @@ void Application::ImGui()
 		fill();
 	}
 	
+	if (ImGui::Button("Kmins"))
+	{
+		event.kMeans(image,5);
+
+	}
 
 	ImGui::End();
 }

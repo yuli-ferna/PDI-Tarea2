@@ -177,3 +177,14 @@ void Event::fillImage(Image* image, cv::Vec2i seed , float fillColor[], bool fil
 	image->addHistory(image->drawImg);
 
 }
+
+void Event::kMeans(Image* image, int k) 
+{
+	cv::Mat data, labels;
+	cv::Mat centers(8, 1, CV_32FC1);
+	image->drawImg.convertTo(data,CV_32F);
+	cv::kmeans(data,k, labels, cv::TermCriteria(),3,cv::KMEANS_PP_CENTERS,centers);
+	imshow("posterized hue", data);
+	data.convertTo(image->drawImg, CV_32FC3);
+
+}
