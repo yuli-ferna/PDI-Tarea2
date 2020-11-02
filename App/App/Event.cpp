@@ -154,3 +154,26 @@ void Event::traslate(Image* image, int translateX, int translateY, bool preview)
 		showPrev = false;
 	}
 }
+
+// fillType false es para vencidad de 4 y true para vencidad de 8
+// rangeType false para rango fijo true rango flotante 
+
+void Event::fillImage(Image* image, cv::Vec2i seed , float fillColor[], bool fillType, bool rageType, int loDiff, int upDiff)
+{	
+	int flags = 4;
+	uchar fillValue;
+
+	if (fillType)
+		flags += 255 << 8;
+	else
+		flags += 128 << 4;
+
+	if (rageType)
+		flags += cv::FLOODFILL_FIXED_RANGE;
+
+	cv::floodFill(image->drawImg, seed,cv::Scalar(fillColor[2]*255, fillColor[1]*255, fillColor[0]*255),0, cv::Scalar(loDiff, loDiff, loDiff), cv::Scalar(upDiff, upDiff, upDiff), flags);
+	
+
+	image->addHistory(image->drawImg);
+
+}

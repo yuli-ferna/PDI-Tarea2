@@ -36,4 +36,5 @@ public:
 	void rotation(Image* image, float angle);
 	void rotation(Image* image, int type);
 	void traslate(Image* image, int translateX, int translateY, bool preview = false);
+	void fillImage(Image* image, cv::Vec2i seed, float fillColor[], bool fillType, bool rageType, int loDiff, int upDiff);
 };
