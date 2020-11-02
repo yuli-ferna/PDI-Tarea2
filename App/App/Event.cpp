@@ -14,7 +14,7 @@ Event::Event()
 	maxValue = 255;
 	cw = 1;
 	showPrev = false;
-	Ncolors = 1;
+	Ncolors = 10;
 }
 
 Event::~Event()
@@ -160,10 +160,10 @@ void Event::traslate(Image* image, int translateX, int translateY, bool preview)
 void Event::uniformQuantization(Image* image) {
 	//round(img*(N/255))*(255/N);
 	//Calculate the posible values with the new range
-	int table[256];
+	float table[256];
 	for (int i = 0; i < 256; ++i)
-	table[i] = (int)(Ncolors * ((float)i / Ncolors));
-		//table[i] = (uchar)((255/Ncolors) * round(i * (255/ Ncolors)));
+		table[i] = round(i * (Ncolors / 255.0))* (255.0 / Ncolors);
+	//table[i] = ((float)Ncolors * (i / (float)Ncolors));
 	std::vector<cv::Mat> bgr_mat;
 	cv::split(image->drawImg, bgr_mat);
 
@@ -186,10 +186,6 @@ void Event::uniformQuantization(Image* image) {
 			(*it)[1] = table[(*it)[1]];
 			(*it)[2] = table[(*it)[2]];
 			
-			//(*it)[0] = round((*it)[0] * (Ncolors / 255.0)) * (255.0 / Ncolors);
-			//(*it)[1] = round((*it)[1] * (Ncolors / 255.0)) * (255.0 / Ncolors);
-			//(*it)[2] = round((*it)[2] * (Ncolors / 255.0)) * (255.0 / Ncolors);
-
 		}
 	}
 	}
