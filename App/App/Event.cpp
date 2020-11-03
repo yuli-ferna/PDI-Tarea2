@@ -245,7 +245,6 @@ void Event::kMeans(Image* image, int k)
 	image->addHistory(image->drawImg);
 
 }
-
 void Event::dithering(Image* image) {
 
 	cv::Mat rgbchannel[3],src;
@@ -299,4 +298,60 @@ void Event::dithering(Image* image) {
 	src.convertTo(image->drawImg, CV_8UC3);
 	
 	image->addHistory(image->drawImg);
+}
+void Event::fourierTransform(Image *image) 
+{
+	cv::Mat grayScale;
+	std::vector<cv::Mat> bgr_mat;
+	cv::split(image->drawImg, bgr_mat);
+
+	bgr_mat[0] = dft(bgr_mat[0]);
+	bgr_mat[1] = dft(bgr_mat[1]);
+	bgr_mat[2] = dft(bgr_mat[2]);
+	cv::Mat magI;
+	cv::merge(bgr_mat, magI);
+
+	cv::imshow("dft", magI);
+	cv::Mat inverseTransform;
+	//cv::dft(magI, inverseTransform, cv::DFT_INVERSE | cv::DFT_REAL_OUTPUT);
+	//normalize(inverseTransform, inverseTransform, 0, 1, cv::NORM_MINMAX);
+	//imshow("Reconstructed", inverseTransform);
+}
+
+cv::Mat Event::dft(cv::Mat mat) {
+	cv::Mat withBorder;
+	int m = cv::getOptimalDFTSize(mat.rows);
+	int n = cv::getOptimalDFTSize(mat.cols); // on the border add zero values
+	copyMakeBorder(mat, withBorder, 0, m - mat.rows, 0, n - mat.cols, cv::BORDER_CONSTANT, cv::Scalar::all(0));
+
+	cv::Mat planes[] = { cv::Mat_<float>(withBorder), cv::Mat::zeros(withBorder.size(), CV_32F) };
+	cv::Mat complexI;
+	cv::merge(planes, 2, complexI);         // Add to the expanded another plane with zeros
+	cv::dft(complexI, complexI);            // this way the result may fit in the source matrix
+
+	split(complexI, planes);                   // planes[0] = Re(DFT(I), planes[1] = Im(DFT(I))
+	magnitude(planes[0], planes[1], planes[0]);// planes[0] = magnitude
+	cv::Mat magI = planes[0];
+	magI += cv::Scalar::all(1);                    // switch to logarithmic scale
+	log(magI, magI);
+	// crop the spectrum, if it has an odd number of rows or columns
+	magI = magI(cv::Rect(0, 0, magI.cols & -2, magI.rows & -2));
+	// rearrange the quadrants of Fourier image  so that the origin is at the image center
+	int cx = magI.cols / 2;
+	int cy = magI.rows / 2;
+	cv::Mat q0(magI, cv::Rect(0, 0, cx, cy));   // Top-Left - Create a ROI per quadrant
+	cv::Mat q1(magI, cv::Rect(cx, 0, cx, cy));  // Top-Right
+	cv::Mat q2(magI, cv::Rect(0, cy, cx, cy));  // Bottom-Left
+	cv::Mat q3(magI, cv::Rect(cx, cy, cx, cy)); // Bottom-Right
+	cv::Mat tmp;                           // swap quadrants (Top-Left with Bottom-Right)
+	q0.copyTo(tmp);
+	q3.copyTo(q0);
+	tmp.copyTo(q3);
+	q1.copyTo(tmp);                    // swap quadrant (Top-Right with Bottom-Left)
+	q2.copyTo(q1);
+	tmp.copyTo(q2);
+	normalize(magI, magI, 0, 1, cv::NORM_MINMAX); // Transform the matrix with float values into a
+											// viewable image form (float between values 0 and 1).
+
+	return magI;
 }

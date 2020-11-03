@@ -42,4 +42,6 @@ public:
 	void fillImage(Image* image, cv::Vec2i seed, float fillColor[], bool fillType, bool rageType, int loDiff, int upDiff);
 	void kMeans(Image* image, int k);
 	void dithering(Image* image);
+	void fourierTransform(Image* image);
+	cv::Mat dft(cv::Mat mat);
 };
