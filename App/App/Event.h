@@ -4,6 +4,11 @@
 
 #include <opencv2/core/core.hpp>
 
+struct imgDFT {
+	cv::Mat complex;
+	cv::Mat magI;
+};
+
 class Event
 {
 	//Image image;
@@ -22,6 +27,7 @@ public:
 	double thresh;
 	double maxValue;
 	float angle;
+	imgDFT I;
 	std::vector<int> kernel;
 	Event();
 	~Event();
@@ -41,5 +47,5 @@ public:
 	void fillImage(Image* image, cv::Vec2i seed, float fillColor[], bool fillType, bool rageType, int loDiff, int upDiff);
 	void kMeans(Image* image, int k);
 	void fourierTransform(Image* image);
-	cv::Mat dft(cv::Mat mat);
+	imgDFT dft(cv::Mat mat);
 };

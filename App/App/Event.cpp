@@ -250,22 +250,34 @@ void Event::fourierTransform(Image *image)
 {
 	cv::Mat grayScale;
 	std::vector<cv::Mat> bgr_mat;
+	std::vector<imgDFT> imgsDFT;
 	cv::split(image->drawImg, bgr_mat);
 
-	bgr_mat[0] = dft(bgr_mat[0]);
-	bgr_mat[1] = dft(bgr_mat[1]);
-	bgr_mat[2] = dft(bgr_mat[2]);
+	imgsDFT.push_back(dft(bgr_mat[0]));
+	imgsDFT.push_back(dft(bgr_mat[1]));
+	imgsDFT.push_back(dft(bgr_mat[2]));
+	bgr_mat[0] = imgsDFT[0].magI;
+	bgr_mat[1] = imgsDFT[1].magI;
+	bgr_mat[2] = imgsDFT[2].magI;
 	cv::Mat magI;
 	cv::merge(bgr_mat, magI);
 
 	cv::imshow("dft", magI);
 	cv::Mat inverseTransform;
-	//cv::dft(magI, inverseTransform, cv::DFT_INVERSE | cv::DFT_REAL_OUTPUT);
-	//normalize(inverseTransform, inverseTransform, 0, 1, cv::NORM_MINMAX);
-	//imshow("Reconstructed", inverseTransform);
+
+	for (int i = 0; i < bgr_mat.size(); i++)
+	{
+		cv::dft(imgsDFT[i].complex, bgr_mat[i], cv::DFT_INVERSE | cv::DFT_REAL_OUTPUT);
+		normalize(bgr_mat[i], bgr_mat[i], 0, 1, cv::NORM_MINMAX);
+	}
+	cv::merge(bgr_mat, inverseTransform);
+
+	imshow("Reconstructed", inverseTransform);
 }
 
-cv::Mat Event::dft(cv::Mat mat) {
+imgDFT Event::dft(cv::Mat mat) {
+	imgDFT img;
+
 	cv::Mat withBorder;
 	int m = cv::getOptimalDFTSize(mat.rows);
 	int n = cv::getOptimalDFTSize(mat.cols); // on the border add zero values
@@ -299,6 +311,7 @@ cv::Mat Event::dft(cv::Mat mat) {
 	tmp.copyTo(q2);
 	normalize(magI, magI, 0, 1, cv::NORM_MINMAX); // Transform the matrix with float values into a
 											// viewable image form (float between values 0 and 1).
-
-	return magI;
+	img.complex = complexI;
+	img.magI = magI;
+	return img;
 }
