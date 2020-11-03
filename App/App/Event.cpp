@@ -245,3 +245,58 @@ void Event::kMeans(Image* image, int k)
 	image->addHistory(image->drawImg);
 
 }
+
+void Event::dithering(Image* image) {
+
+	cv::Mat rgbchannel[3],src;
+	image->drawImg.convertTo(src, CV_64F);
+	split(src, rgbchannel);
+	
+	double data[4][4] = { 0,14,3,13,11,5,8,6,2,12,1,15,9, 7,10 ,4 };
+	int x, b0, in, b1, vi, y;
+	
+
+	for (int k = 0; k < 3; k++) {
+
+		for (int i = 0; i < rgbchannel[k].rows; i++) {
+
+			x = i % 4;
+
+			for (int j = 0; j < rgbchannel[k].cols; j++) {
+
+				y = j % 4;
+
+				in = rgbchannel[k].at<double>(i, j);
+
+				/*if (in < 127)
+					b0 = 0;
+				else
+					b0 = 255;
+
+				vi = in & 0xf;*/
+				b0 = in >> 2;
+
+				if (b0 + 1 > 64)
+					b1 = 64;
+				else
+					b1 = b0 + 1;
+
+				vi = in & 64;
+
+				if (vi > data[x][y]) rgbchannel[k].at<double>(i, j) = b1;
+
+				else rgbchannel[k].at<double>(i, j) = b0;
+			}
+		}
+	}
+
+	std::vector<cv::Mat>channels;
+	channels.push_back(rgbchannel[0]);
+	channels.push_back(rgbchannel[1]);
+	channels.push_back(rgbchannel[2]);
+
+	cv::merge(channels, src);
+	src.convertTo(image->drawImg, CV_8UC3);
+	
+	image->addHistory(image->drawImg);
+}

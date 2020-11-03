@@ -230,7 +230,11 @@ void Application::ImGui()
 		event.kMeans(image,5);
 
 	}
+	if (ImGui::Button("dithering"))
+	{
+		event.dithering(image);
 
+	}
 	modal();
 
 	ImGui::End();
