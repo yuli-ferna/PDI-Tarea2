@@ -3,6 +3,7 @@
 #include "Image.h"
 
 #include <opencv2/core/core.hpp>
+#include <opencv2/highgui/highgui.hpp> 
 
 struct imgDFT {
 	cv::Mat complex;
@@ -46,6 +47,7 @@ public:
 
 	void fillImage(Image* image, cv::Vec2i seed, float fillColor[], bool fillType, bool rageType, int loDiff, int upDiff);
 	void kMeans(Image* image, int k);
+	void dithering(Image* image);
 	void fourierTransform(Image* image);
 	imgDFT dft(cv::Mat mat);
 };
