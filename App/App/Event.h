@@ -20,10 +20,10 @@ public:
 	int cw;
 	int Ncolors;
 	int nBits;
-	int radius;
 	double thresh;
 	double maxValue;
 	float angle;
+	int radius;
 	std::vector<cv::Mat> complexImages;
 	std::vector<int> kernel;
 	Event();

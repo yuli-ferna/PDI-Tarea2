@@ -314,15 +314,19 @@ void Event::fourierTransform(Image *image)
 //Antes de usar esta funcion primero se debe ejecutar fourierTransform
 void Event::showLowPass() {
 	std::vector<cv::Mat> filter;
+	std::vector<cv::Mat> complexCopy;
 
 	filter.push_back(complexImages[0].clone());
 	filter.push_back(complexImages[1].clone());
 	filter.push_back(complexImages[2].clone());
+	complexCopy.push_back(complexImages[0].clone());
+	complexCopy.push_back(complexImages[1].clone());
+	complexCopy.push_back(complexImages[2].clone());
 
 	for (int i = 0; i < 3; i++)
 	{
 		lowPass(filter[i], radius);
-		filter[i] = createImgFilter(filter[i], complexImages[i]);
+		filter[i] = createImgFilter(filter[i], complexCopy[i]);
 	}
 
 	cv::Mat inverseTransform;
