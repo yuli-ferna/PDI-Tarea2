@@ -95,7 +95,7 @@ void Application::MainLoop()
 	canvaWidth = 1370;
 	canvaHeight = 815;
 	angle = 0;
-	translateX = 0;
+	translateX = kTheMeans = 0;
 	translateY = 0;
 	seed[0] = seed[1] = 0;
 	rangeType = fillType = true;
@@ -225,11 +225,13 @@ void Application::ImGui()
 		bitReduction();
 		
 	}
-	if (ImGui::Button("Kmins"))
+	if (ImGui::CollapsingHeader("K-Means")) 
 	{
-		event.kMeans(image,5);
+		
+		kMeans();
 
 	}
+	ImGui::Separator();
 	if (ImGui::Button("dithering"))
 	{
 		event.dithering(image);
@@ -353,6 +355,16 @@ void Application::modal() {
 
 }
 
+void Application::kMeans() 
+{
+
+	if (ImGui::InputInt("K", &kTheMeans, 1, 10)) kTheMeans < 0 ? kTheMeans = 0 : kTheMeans = kTheMeans;
+	if (ImGui::Button("Kmins"))
+	{
+		event.kMeans(image, kTheMeans);
+	}
+
+}
 void Application::ThresholdSection() 
 {
 

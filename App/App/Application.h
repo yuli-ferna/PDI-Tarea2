@@ -15,7 +15,7 @@ class Application
 	bool show_demo_window = true;
 
 	unsigned int cols, rows;
-	int translateX, translateY;
+	int translateX, translateY, kTheMeans;
 	float angle;
 	float fillColor[3] = { 1.0f,0.0f,0.2f };
 	cv::Vec2d mouse;
@@ -40,6 +40,7 @@ public:
 	void bitReduction();
 	void fill();
 	void modal();
+	void kMeans();
 	void ThresholdSection();
 	void MorphologySection();
 	void Histogram();

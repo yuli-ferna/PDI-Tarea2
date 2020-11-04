@@ -249,13 +249,11 @@ void Event::kMeans(Image* image, int k)
 void Event::dithering(Image* image) {
 
 	cv::Mat rgbchannel[3],src;
-	image->drawImg.convertTo(src, CV_64F);
-	split(src, rgbchannel);
+	split(image->drawImg, rgbchannel);
 	
-	double data[4][4] = { 0,14,3,13,11,5,8,6,2,12,1,15,9, 7,10 ,4 };
+	int data[4][4] = { 0,14,3,13,11,5,8,6,2,12,1,15,9, 7,10 ,4 };
 	int x, b0, in, b1, vi, y;
 	
-
 	for (int k = 0; k < 3; k++) {
 
 		for (int i = 0; i < rgbchannel[k].rows; i++) {
@@ -266,26 +264,20 @@ void Event::dithering(Image* image) {
 
 				y = j % 4;
 
-				in = rgbchannel[k].at<double>(i, j);
+				in = rgbchannel[k].at<UCHAR>(i, j);
 
-				/*if (in < 127)
-					b0 = 0;
-				else
-					b0 = 255;
+				b0 = in >> 4;
 
-				vi = in & 0xf;*/
-				b0 = in >> 2;
-
-				if (b0 + 1 > 64)
-					b1 = 64;
+				if (b0 + 1 > 16)
+					b1 = 16;
 				else
 					b1 = b0 + 1;
 
-				vi = in & 64;
+				vi = in & 16;
 
-				if (vi > data[x][y]) rgbchannel[k].at<double>(i, j) = b1;
+				if (vi > data[x][y]) rgbchannel[k].at<UCHAR>(i, j) = b1;
 
-				else rgbchannel[k].at<double>(i, j) = b0;
+				else rgbchannel[k].at<UCHAR>(i, j) = b0;
 			}
 		}
 	}
@@ -295,10 +287,10 @@ void Event::dithering(Image* image) {
 	channels.push_back(rgbchannel[1]);
 	channels.push_back(rgbchannel[2]);
 
-	cv::merge(channels, src);
-	src.convertTo(image->drawImg, CV_8UC3);
-	
-	image->addHistory(image->drawImg);
+	cv::merge(channels, image->drawImg);
+
+	ecHistogram(image);
+
 }
 void Event::fourierTransform(Image *image) 
 {
