@@ -16,6 +16,7 @@ Event::Event()
 	showPrev = false;
 	Ncolors = 16;
 	nBits = 4;
+	radius = 35;
 }
 
 Event::~Event()
@@ -301,51 +302,101 @@ void Event::dithering(Image* image) {
 }
 void Event::fourierTransform(Image *image) 
 {
-	cv::Mat grayScale;
+	complexImages.clear();
 	std::vector<cv::Mat> bgr_mat;
-	std::vector<imgDFT> imgsDFT;
 	cv::split(image->drawImg, bgr_mat);
 
-	imgsDFT.push_back(dft(bgr_mat[0]));
-	imgsDFT.push_back(dft(bgr_mat[1]));
-	imgsDFT.push_back(dft(bgr_mat[2]));
-	bgr_mat[0] = imgsDFT[0].magI;
-	bgr_mat[1] = imgsDFT[1].magI;
-	bgr_mat[2] = imgsDFT[2].magI;
+	complexImages.push_back(dft(bgr_mat[0]));
+	complexImages.push_back(dft(bgr_mat[1]));
+	complexImages.push_back(dft(bgr_mat[2]));
+	bgr_mat[0] = EspectrumMag(complexImages[0]);
+	bgr_mat[1] = EspectrumMag(complexImages[1]);
+	bgr_mat[2] = EspectrumMag(complexImages[2]);
 	cv::Mat magI;
 	cv::merge(bgr_mat, magI);
-
 	cv::imshow("dft", magI);
-	cv::Mat inverseTransform;
 
-	for (int i = 0; i < bgr_mat.size(); i++)
-	{
-		cv::dft(imgsDFT[i].complex, bgr_mat[i], cv::DFT_INVERSE | cv::DFT_REAL_OUTPUT);
-		normalize(bgr_mat[i], bgr_mat[i], 0, 1, cv::NORM_MINMAX);
-	}
-	cv::merge(bgr_mat, inverseTransform);
-
-	imshow("Reconstructed", inverseTransform);
+	showLowPass();
 }
 
-imgDFT Event::dft(cv::Mat mat) {
-	imgDFT img;
+//Antes de usar esta funcion primero se debe ejecutar fourierTransform
+void Event::showLowPass() {
+	std::vector<cv::Mat> filter;
+
+	filter.push_back(complexImages[0].clone());
+	filter.push_back(complexImages[1].clone());
+	filter.push_back(complexImages[2].clone());
+
+	for (int i = 0; i < 3; i++)
+	{
+		lowPass(filter[i], radius);
+		filter[i] = createImgFilter(filter[i], complexImages[i]);
+	}
+
+	cv::Mat inverseTransform;
+	cv::merge(filter, inverseTransform);
+	imshow("Reconstructed", inverseTransform);
+}
+cv::Mat Event::dft(cv::Mat mat) {
 
 	cv::Mat withBorder;
 	int m = cv::getOptimalDFTSize(mat.rows);
 	int n = cv::getOptimalDFTSize(mat.cols); // on the border add zero values
-	copyMakeBorder(mat, withBorder, 0, m - mat.rows, 0, n - mat.cols, cv::BORDER_CONSTANT, cv::Scalar::all(0));
-
+	cv::copyMakeBorder(mat, withBorder, 0, m - mat.rows, 0, n - mat.cols, cv::BORDER_CONSTANT, cv::Scalar::all(0));
 	cv::Mat planes[] = { cv::Mat_<float>(withBorder), cv::Mat::zeros(withBorder.size(), CV_32F) };
+
 	cv::Mat complexI;
 	cv::merge(planes, 2, complexI);         // Add to the expanded another plane with zeros
-	cv::dft(complexI, complexI);            // this way the result may fit in the source matrix
+	cv::dft(complexI, complexI, cv::DFT_COMPLEX_OUTPUT);            // this way the result may fit in the source matrix
 
-	split(complexI, planes);                   // planes[0] = Re(DFT(I), planes[1] = Im(DFT(I))
-	magnitude(planes[0], planes[1], planes[0]);// planes[0] = magnitude
-	cv::Mat magI = planes[0];
-	magI += cv::Scalar::all(1);                    // switch to logarithmic scale
-	log(magI, magI);
+	return complexI;
+}
+
+void Event::lowPass(cv::Mat &complexI, int d) {
+	cv::Mat tmp = cv::Mat(complexI.rows, complexI.cols, CV_32F);
+
+	cv::Point centre = cv::Point(complexI.rows / 2, complexI.cols / 2);
+	double radius;
+	int row = complexI.rows, col = complexI.cols;
+	for (int i = 0; i < complexI.rows; i++)
+	{
+		for (int j = 0; j < complexI.cols; j++)
+		{
+			radius = (double)sqrt(pow((i - centre.x), 2.0) + pow((double)(j - centre.y), 2.0));
+			if (radius > d) {
+				tmp.at<float>(i, j) = (float)0;
+			}
+			else {
+				tmp.at<float>(i, j) = (float)1;
+			}
+
+		}
+	}
+
+	cv::Mat toMerge[] = { tmp, tmp };
+	merge(toMerge, 2, complexI);
+	
+}
+
+cv::Mat Event::createImgFilter(cv::Mat filter, cv::Mat complexI)
+{
+	cv::Mat planes[2], imgOutput;
+	fftShift(complexI); // rearrage quadrants
+	cv::mulSpectrums(complexI, filter, complexI, 0); // multiply 2 spectrums
+	fftShift(complexI); // rearrage quadrants
+	//cv::Mat espectad = EspectrumMag(complexI);
+	//cv::imshow("auxilio", espectad);
+
+	// compute inverse
+	idft(complexI, complexI);
+
+	split(complexI, planes);
+	normalize(planes[0], imgOutput, 0, 1, cv::NORM_MINMAX);
+	//cv::imshow("dft", imgOutput);
+	return imgOutput;
+}
+
+void Event::fftShift(cv::Mat &magI) {
 	// crop the spectrum, if it has an odd number of rows or columns
 	magI = magI(cv::Rect(0, 0, magI.cols & -2, magI.rows & -2));
 	// rearrange the quadrants of Fourier image  so that the origin is at the image center
@@ -362,9 +413,24 @@ imgDFT Event::dft(cv::Mat mat) {
 	q1.copyTo(tmp);                    // swap quadrant (Top-Right with Bottom-Left)
 	q2.copyTo(q1);
 	tmp.copyTo(q2);
+}
+
+cv::Mat Event::EspectrumMag(cv::Mat complexI){
+	cv::Mat magI;
+	cv::Mat planes[] = {
+		cv::Mat::zeros(complexI.size(), CV_32F),
+		cv::Mat::zeros(complexI.size(), CV_32F)
+	};
+
+	//cv::Mat planes[] = { cv::Mat_<float>(withBorder), cv::Mat::zeros(withBorder.size(), CV_32F) };
+
+	split(complexI, planes);                   // planes[0] = Re(DFT(I), planes[1] = Im(DFT(I))
+	magnitude(planes[0], planes[1], planes[0]);// planes[0] = magnitude
+	magI = planes[0];
+	magI += cv::Scalar::all(1);                    // switch to logarithmic scale
+	log(magI, magI);
+	fftShift(magI);
 	normalize(magI, magI, 0, 1, cv::NORM_MINMAX); // Transform the matrix with float values into a
 											// viewable image form (float between values 0 and 1).
-	img.complex = complexI;
-	img.magI = magI;
-	return img;
+	return magI;
 }

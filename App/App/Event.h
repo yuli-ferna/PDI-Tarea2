@@ -5,11 +5,6 @@
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp> 
 
-struct imgDFT {
-	cv::Mat complex;
-	cv::Mat magI;
-};
-
 class Event
 {
 	//Image image;
@@ -25,10 +20,11 @@ public:
 	int cw;
 	int Ncolors;
 	int nBits;
+	int radius;
 	double thresh;
 	double maxValue;
 	float angle;
-	imgDFT I;
+	std::vector<cv::Mat> complexImages;
 	std::vector<int> kernel;
 	Event();
 	~Event();
@@ -49,5 +45,10 @@ public:
 	void kMeans(Image* image, int k);
 	void dithering(Image* image);
 	void fourierTransform(Image* image);
-	imgDFT dft(cv::Mat mat);
+	void showLowPass();
+	cv::Mat dft(cv::Mat mat);
+	void lowPass(cv::Mat& imgDft, int d);
+	cv::Mat createImgFilter(cv::Mat filter, cv::Mat complexI);
+	void fftShift(cv::Mat& magI);
+	cv::Mat EspectrumMag(cv::Mat complexI);
 };
