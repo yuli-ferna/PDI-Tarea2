@@ -240,6 +240,7 @@ void Application::ImGui()
 	if (ImGui::Button("fourierTransform"))
 	{
 		event.fourierTransform(image);
+		modalNameAct = "Discrete Fourier Transform";
 	}
 
 	modal();
@@ -347,6 +348,51 @@ void Application::modal() {
 		if (ImGui::Button("Cancel", ImVec2(120, 0))) {
 			modalNameAct = "";
 			event.showPrev = false;
+			image->createTexture();
+			ImGui::CloseCurrentPopup();
+		}
+		ImGui::EndPopup();
+	}
+
+	if (ImGui::BeginPopupModal("Discrete Fourier Transform", NULL, ImGuiWindowFlags_AlwaysAutoResize))
+	{
+		//ImGui::SetWindowPos(ImVec2(canvaWidth + 30, 350));
+
+
+		/*if (ImGui::SliderInt("Panning Left X", &translateX, -image->drawImg.cols, image->drawImg.cols, "%d")) {
+			if (event.showPrev)
+				event.traslate(image, translateX, translateY, true);
+		}
+		*/
+		ImGui::Text("Low Pass Filter");
+		ImGui::Separator();
+
+		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0, 0));
+		if (ImGui::Checkbox("Preview", &event.showPrev))
+		{
+			if (event.showPrev)
+			{
+				image->createTexturePrev();
+			}
+			else
+			{
+				image->createTexture();
+			}
+		}
+		ImGui::PopStyleVar();
+
+		if (ImGui::Button("OK", ImVec2(120, 0))) {
+			image->drawImg = image->preview;
+			image->addHistory(image->drawImg);
+			modalNameAct = "";
+			ImGui::CloseCurrentPopup();
+		}
+		ImGui::SetItemDefaultFocus();
+		ImGui::SameLine();
+		if (ImGui::Button("Cancel", ImVec2(120, 0))) {
+			modalNameAct = "";
+			event.showPrev = false;
+			image->drawImg = image->history.back();
 			image->createTexture();
 			ImGui::CloseCurrentPopup();
 		}

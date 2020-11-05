@@ -294,7 +294,12 @@ void Event::dithering(Image* image) {
 }
 void Event::fourierTransform(Image *image) 
 {
-	complexImages.clear();
+	if (!complexImages.empty())
+	{
+		complexImages.clear();
+
+	}
+	//complexImages.clear();
 	std::vector<cv::Mat> bgr_mat;
 	cv::split(image->drawImg, bgr_mat);
 
@@ -304,24 +309,62 @@ void Event::fourierTransform(Image *image)
 	bgr_mat[0] = EspectrumMag(complexImages[0]);
 	bgr_mat[1] = EspectrumMag(complexImages[1]);
 	bgr_mat[2] = EspectrumMag(complexImages[2]);
-	cv::Mat magI;
-	cv::merge(bgr_mat, magI);
-	cv::imshow("dft", magI);
+	//cv::Mat magI;
+	cv::merge(bgr_mat, magImg);
+	//cv::imshow("dft", magImg);
+	//image->preview = magImg.clone();
+	magImg.convertTo(magImg, CV_8UC3, 255);
 
-	showLowPass();
+	image->drawImg = magImg;
+	//imshow("Reconstructed", image->preview);
+
+	image->createTexture();
+	showPrev = true;
+
+	showLowPass(image, true);
+	//cv::imshow("original", image->drawImg);
 }
 
+void Event::MagPreview(Image* image) {
+	image->preview = magImg;
+	//imshow("Reconstructed", image->preview);
+	image->createTexturePrev();
+}
+
+std::string Event::type2str(int type) {
+	std::string r;
+
+	uchar depth = type & CV_MAT_DEPTH_MASK;
+	uchar chans = 1 + (type >> CV_CN_SHIFT);
+
+	switch (depth) {
+	case CV_8U:  r = "8U"; break;
+	case CV_8S:  r = "8S"; break;
+	case CV_16U: r = "16U"; break;
+	case CV_16S: r = "16S"; break;
+	case CV_32S: r = "32S"; break;
+	case CV_32F: r = "32F"; break;
+	case CV_64F: r = "64F"; break;
+	default:     r = "User"; break;
+	}
+
+	r += "C";
+	r += (chans + '0');
+
+	return r;
+}
 //Antes de usar esta funcion primero se debe ejecutar fourierTransform
-void Event::showLowPass() {
+void Event::showLowPass(Image* image, bool preview) {
+	
 	std::vector<cv::Mat> filter;
 	std::vector<cv::Mat> complexCopy;
 
 	filter.push_back(complexImages[0].clone());
 	filter.push_back(complexImages[1].clone());
 	filter.push_back(complexImages[2].clone());
-	complexCopy.push_back(complexImages[0].clone());
-	complexCopy.push_back(complexImages[1].clone());
-	complexCopy.push_back(complexImages[2].clone());
+	complexCopy.push_back(complexImages[0]);
+	complexCopy.push_back(complexImages[1]);
+	complexCopy.push_back(complexImages[2]);
 
 	for (int i = 0; i < 3; i++)
 	{
@@ -331,7 +374,21 @@ void Event::showLowPass() {
 
 	cv::Mat inverseTransform;
 	cv::merge(filter, inverseTransform);
-	imshow("Reconstructed", inverseTransform);
+	inverseTransform.convertTo(inverseTransform, CV_8UC3, 255);
+	if (preview)
+	{
+		//cv::warpAffine(image->drawImg, image->preview, trans_mat, image->drawImg.size());
+		image->preview = inverseTransform;
+		//imshow("Reconstructed", image->preview);
+		image->createTexturePrev();
+	}
+	else {
+		//cv::warpAffine(image->drawImg, image->drawImg, trans_mat, image->drawImg.size());
+		image->drawImg = inverseTransform;
+		image->addHistory(image->drawImg);
+		showPrev = false;
+	}
+	//imshow("Reconstructed", inverseTransform);
 }
 cv::Mat Event::dft(cv::Mat mat) {
 

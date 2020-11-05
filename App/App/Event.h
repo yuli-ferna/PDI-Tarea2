@@ -24,8 +24,10 @@ public:
 	double maxValue;
 	float angle;
 	int radius;
-	std::vector<cv::Mat> complexImages;
+	cv::Mat magImg;
 	std::vector<int> kernel;
+	std::vector<cv::Mat> complexImages;
+
 	Event();
 	~Event();
 	void resetKernel();
@@ -45,7 +47,9 @@ public:
 	void kMeans(Image* image, int k);
 	void dithering(Image* image);
 	void fourierTransform(Image* image);
-	void showLowPass();
+	void MagPreview(Image* image);
+	std::string type2str(int type);
+	void showLowPass(Image* image, bool preview = false);
 	cv::Mat dft(cv::Mat mat);
 	void lowPass(cv::Mat& imgDft, int d);
 	cv::Mat createImgFilter(cv::Mat filter, cv::Mat complexI);
