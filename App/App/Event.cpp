@@ -411,9 +411,9 @@ void Event::lowPass(cv::Mat &complexI, int d) {
 	cv::Point centre = cv::Point(complexI.rows / 2, complexI.cols / 2);
 	double radius;
 	int row = complexI.rows, col = complexI.cols;
-	for (int i = 0; i < complexI.rows; i++)
+	for (int i = 0; i < row; i++)
 	{
-		for (int j = 0; j < complexI.cols; j++)
+		for (int j = 0; j < col; j++)
 		{
 			radius = (double)sqrt(pow((i - centre.x), 2.0) + pow((double)(j - centre.y), 2.0));
 			if (radius > d) {
