@@ -17,7 +17,7 @@ para poder correr el proyecto debes seguir los siguientes pasos
 ## Asunciones
 
 * En reducción de bits damos la opcion mediante un select con la cantidad de bits que se quieren reducir de la imagen (de 1 a 7 bits), esto se hace haciendo una mascara de bits desplazando la cantidad de bits que se quieren reducir, en este caso descartariamos los bits menos significativos, y a su vez se le suma una costante (2^n/2) de esta manera los valores finales no empezarían en 0. 
-* En k-media se puede elegi el k a aplicar e la imagen.
+* En k-media se puede elegir el k que se le va aplicar en la imagen.
 * En umbralización automática tenemos OTSU y To zero inv (THRESH_TOZERO_INV). En el caso de umbralización to zero, cuando el valor del pixel es mayor a la del umbral se mantiene el mismo gris de la imagen original, mientras que cuando el valor del pixel es menor al umbral se asigna 0 (negro). Para nuestro proyecto elegimos la version invertida, ya que visualmente se aprecian mejor los objetos separados del fondo.
 * Ecualización del Histograma. Aplicamos la funcion de opencv equalizeHist, en cada canal de la imagen (usando split) y despues usamos merge para unirlos y ese es el resultado que se muestra en pantalla.
 * Morfología (Erosión, dilatación, apertura y cierre). El usuario puede elegir el tipo de elemento estructurante que desee (tenemos las opciones de: Morph_rect, Morph_cross o Morph_ellipse) junto con un n para el tamaño del kernel que viene dado en (2n + 1). Y también puede dar un kernel arbitrario, elegir cantidad de filas y columnas, y poner el valor de cada una de las casillas.
